@@ -27,7 +27,13 @@
       "bundler": "metro"
     },
     "plugins": [
-      "expo-font"
+      ["expo-font"],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "O app acessa suas fotos para você poder compartilhar ela no seu perfil."
+        }
+      ]
     ]
   }
 }

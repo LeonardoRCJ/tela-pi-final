@@ -29,9 +29,13 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { AuthContext } from "../context/AuthContext";
+import Toast from "react-native-toast-message";
 
 export default function ClassGroups() {
   const { getFontSize, getTextColor } = useContext(AppContext);
+
+  const { token } = useContext(AuthContext);
 
   const navigation = useNavigation();
 
@@ -96,7 +100,7 @@ export default function ClassGroups() {
     }
 
     try {
-      api.post(
+     await api.post(
         "/class-groups",
         {
           name: newClassGroupName,
@@ -116,24 +120,43 @@ export default function ClassGroups() {
     fecharModal();
   };
 
-  const handleRemoveTurma = async (id: number) => {
-    await api.delete(`/class-groups/${id}`);
+  const updateClassGroup = async (id: number) => {
+    if (!newClassGroupName.trim()) {
+      Alert.alert("Erro", "Digite o nome da turma");
+      return;
+    }
+
+    try {
+     await api.patch(
+        `/class-groups/${id}`, null,
+        {
+          params: {
+            name: newClassGroupName
+          },
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        },
+      );
+
+      Toast.show({
+        type: 'success',
+        text1: 'Sucesso!',
+        text2: 'Foto do usuário atualizada com sucesso!'
+      })
+      onRefresh();
+    } catch (err: any) {
+      console.log(err.response.data.message);
+    }
+    fecharModal();
   };
 
-  const handleDelete = (id: number, name: string) => {
-    Alert.alert(
-      "Excluir Turma",
-      `Tem certeza que deseja apagar a turma "${name}"?`,
-      [
-        { text: "Cancelar", style: "cancel" },
-        {
-          text: "Excluir",
-          style: "destructive",
-          onPress: () => handleRemoveTurma(id),
-        },
-      ],
-    );
+  const handleRemoveTurma = async (id: number) => {
+    await api.delete(`/class-groups/${id}`);
+
+    onRefresh();
   };
+
 
   const renderClassGroup = ({ item }: { item: SimpleClassGroup }) => (
     <View style={styles.card}>
@@ -265,7 +288,14 @@ export default function ClassGroups() {
               </TouchableOpacity>
 
               <TouchableOpacity
-                onPress={saveClassGroup}
+                onPress={() => {
+                  if(editingId) {
+                    updateClassGroup(editingId)
+                  }else {
+                    saveClassGroup();
+                  }
+                  
+                }}
                 style={[styles.btnSalvar, isDisabled && { opacity: 0.5 }]}
                 disabled={isDisabled}
               >

@@ -22,6 +22,7 @@ import { CommonActions } from "@react-navigation/native";
 import api from "../services/api";
 import { Attendances, Practitioner } from "../interfaces/practitioner";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import Toast from "react-native-toast-message";
 
 export type RootStackParamList = {
   SignIn: undefined;
@@ -63,7 +64,11 @@ export default function DetalheTurma({ route, navigation }: any) {
 
       setPractitioners(response.data);
     } catch (error: any) {
-      Alert.alert("Erro", "Não foi possível carregar os alunos.");
+      Toast.show({
+        type: "error",
+        text1: "Erro",
+        text2: error.response.data.message
+      })
     }
   };
 

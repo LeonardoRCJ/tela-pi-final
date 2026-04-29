@@ -2,9 +2,7 @@ import React, { useContext, useState } from "react";
 import {
   View,
   Text,
-  TouchableOpacity,
   StyleSheet,
-  TextInput,
   Pressable,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
@@ -20,7 +18,7 @@ export type RootStackParamList = {
   SignIn: undefined;
   SignUp: undefined;
   Main: {
-    screen?: string;
+    screen: undefined;
   };
   DetalheTurma: undefined;
   FrequenciaAluno: undefined;
@@ -36,7 +34,6 @@ export default function Login() {
 
   const [error, setError] = useState<string>("");
 
-  const navigation = useNavigation<NavigationProps>();
 
   async function handleLogin(email: string, password: string) {
     try {
@@ -49,9 +46,7 @@ export default function Login() {
 
       login(accessToken);
 
-      navigation.navigate("Main", {
-        screen: "Principal",
-      });
+      
     } catch (err: any) {
       setError(err.response.data.message);
     }

@@ -3,6 +3,7 @@ import React, { useContext } from "react";
 import "./global.css";
 
 import { NavigationContainer } from "@react-navigation/native";
+import Toast, { BaseToast, ErrorToast } from 'react-native-toast-message'
 
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
@@ -21,7 +22,7 @@ import Cadastro from "./src/screens/SignUp";
 
 import ClassGroups from "./src/screens/ClassGroups";
 import PerfilProfessor from "./src/screens/Profile";
-import DetalheTurma from "./src/screens/DetalheTurma";
+import DetalheTurma from "./src/screens/ClassGroupDetail";
 import FrequenciaAluno from "./src/screens/Frequencia";
 
 import JoinClassGroup from "./src/screens/CommonClassGroupsScreen";
@@ -33,6 +34,46 @@ import QrScanner from "./src/screens/QrScannerScreen";
 const Stack = createNativeStackNavigator();
 
 const Tab = createBottomTabNavigator();
+
+const toastConfig = {
+  success: (props: any) => (
+    <BaseToast
+      {...props}
+      style={{
+        borderLeftColor: "#87ff06",
+        backgroundColor: "#1A1A1A",
+      }}
+      contentContainerStyle={{
+        paddingHorizontal: 15,
+      }}
+      text1Style={{
+        color: "#FFFFFF",
+        fontSize: 16,
+        fontWeight: "bold",
+      }}
+      text2Style={{
+        color: "#CCCCCC",
+        fontSize: 13,
+      }}
+    />
+  ),
+
+  error: (props: any) => (
+    <ErrorToast
+      {...props}
+      style={{
+        borderLeftColor: "#FF4444",
+        backgroundColor: "#1A1A1A",
+      }}
+      text1Style={{
+        color: "#FFF",
+      }}
+      text2Style={{
+        color: "#CCC",
+      }}
+    />
+  ),
+};
 
 function MasterTabs() {
   return (
@@ -163,6 +204,7 @@ export default function App() {
       <AppProvider>
         <AppRoutes />
         <PortalHost />
+        <Toast config={toastConfig}/>
       </AppProvider>
     </AuthProvider>
   );
