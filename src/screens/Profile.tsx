@@ -25,6 +25,7 @@ import { User } from "../interfaces/user";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import Toast from "react-native-toast-message";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { ThemeContext } from "../context/ThemeContext";
 
 export type RootStackParamList = {
   SignIn: undefined;
@@ -42,17 +43,19 @@ export default function PerfilProfessor() {
   const navigation = useNavigation<NavigationProps>();
 
   const {
-    isDarkTheme,
-    toggleTheme,
-    idioma,
-    mudarIdioma,
-    fonteMaior,
-    toggleFonteMaior,
-    getFontSize,
-    altoContraste,
-    toggleAltoContraste,
-    getTextColor,
-  } = useContext(AppContext);
+    isDark,
+    toggleColorScheme,
+    language,
+    toggleLanguage,
+    largeFonts,
+    toggleLargeFonts,
+    colors,
+    highContrast,
+    toggleHighContrast,
+    fs,
+    t,
+    tc
+  } = useContext(ThemeContext);
 
   const { token, logout, isMaster, user } = useContext(AuthContext);
 
@@ -186,12 +189,12 @@ export default function PerfilProfessor() {
     setOpenLogoutDialog(true);
   }
 
-  const bgColor = isDarkTheme ? "#0F0F0F" : "#F5F5F5";
-  const cardColor = isDarkTheme ? "#1A1A1A" : "#FFFFFF";
-  const textColor = isDarkTheme ? "#FFFFFF" : "#333333";
-  const subTextColor = getTextColor(isDarkTheme ? "#888888" : "#666666");
-  const inputBg = isDarkTheme ? "#252525" : "#E8E8E8";
-
+    const bgColor = colors.bg;
+    const cardColor = colors.card;
+    const textColor = colors.text;
+    const subTextColor = tc(colors.textMuted);
+    const inputBg = colors.inputBg;
+  
   return (
     <View style={{ flex: 1, backgroundColor: bgColor }}>
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -228,7 +231,7 @@ export default function PerfilProfessor() {
           <Text
             style={[
               styles.nomeText,
-              { color: textColor, fontSize: getFontSize(24) },
+              { color: textColor, fontSize: fs(24) },
             ]}
           >
             {userSelected?.name}
@@ -237,13 +240,13 @@ export default function PerfilProfessor() {
           <Text
             style={[
               styles.bioText,
-              { color: subTextColor, fontSize: getFontSize(14) },
+              { color: subTextColor, fontSize: fs(14) },
             ]}
           >
             {userSelected?.bio || "Sem bio cadastrada"}
           </Text>
 
-          <Text style={[styles.roleText, { fontSize: getFontSize(13) }]}>
+          <Text style={[styles.roleText, { fontSize: fs(13) }]}>
             {isMaster ? "Mestre" : "Praticante"}
           </Text>
 
@@ -260,7 +263,7 @@ export default function PerfilProfessor() {
             <Text
               style={[
                 styles.editProfileText,
-                { fontSize: getFontSize(14) },
+                { fontSize: fs(14) },
               ]}
             >
               Editar Perfil
@@ -273,7 +276,7 @@ export default function PerfilProfessor() {
           <Text
             style={[
               styles.sectionTitle,
-              { color: subTextColor, fontSize: getFontSize(12) },
+              { color: subTextColor, fontSize: fs(12) },
             ]}
           >
             PREFERÊNCIAS
@@ -283,7 +286,7 @@ export default function PerfilProfessor() {
             <View style={styles.settingIconText}>
               <View style={[styles.iconBox, { backgroundColor: "#333" }]}>
                 <Ionicons
-                  name={isDarkTheme ? "moon" : "sunny"}
+                  name={isDark ? "moon" : "sunny"}
                   size={20}
                   color="#FFF"
                 />
@@ -292,7 +295,7 @@ export default function PerfilProfessor() {
               <Text
                 style={[
                   styles.settingText,
-                  { color: textColor, fontSize: getFontSize(16) },
+                  { color: textColor, fontSize: fs(16) },
                 ]}
               >
                 Tema Escuro
@@ -300,16 +303,16 @@ export default function PerfilProfessor() {
             </View>
 
             <Switch
-              value={isDarkTheme}
-              onValueChange={toggleTheme}
+              value={isDark}
+              onValueChange={toggleColorScheme}
               trackColor={{ false: "#767577", true: "#D4AF37" }}
-              thumbColor={isDarkTheme ? "#FFF" : "#f4f3f4"}
+              thumbColor={isDark ? "#FFF" : "#f4f3f4"}
             />
           </View>
 
           <TouchableOpacity
             style={[styles.settingRow, { backgroundColor: cardColor }]}
-            onPress={mudarIdioma}
+            onPress={toggleLanguage}
           >
             <View style={styles.settingIconText}>
               <View style={[styles.iconBox, { backgroundColor: "#2D5AA0" }]}>
@@ -319,7 +322,7 @@ export default function PerfilProfessor() {
               <Text
                 style={[
                   styles.settingText,
-                  { color: textColor, fontSize: getFontSize(16) },
+                  { color: textColor, fontSize: fs(16) },
                 ]}
               >
                 Idioma
@@ -329,10 +332,10 @@ export default function PerfilProfessor() {
             <Text
               style={[
                 styles.settingValueText,
-                { color: subTextColor, fontSize: getFontSize(14) },
+                { color: subTextColor, fontSize: fs(14) },
               ]}
             >
-              {idioma === "pt-BR" ? "Português" : "English"}
+              {language === "en-US" ? "Português" : "English"}
             </Text>
           </TouchableOpacity>
 
@@ -342,7 +345,7 @@ export default function PerfilProfessor() {
               {
                 color: subTextColor,
                 marginTop: 20,
-                fontSize: getFontSize(12),
+                fontSize: fs(12),
               },
             ]}
           >
@@ -358,7 +361,7 @@ export default function PerfilProfessor() {
               <Text
                 style={[
                   styles.settingText,
-                  { color: textColor, fontSize: getFontSize(16) },
+                  { color: textColor, fontSize: fs(16) },
                 ]}
               >
                 Fonte Ampliada
@@ -366,10 +369,10 @@ export default function PerfilProfessor() {
             </View>
 
             <Switch
-              value={fonteMaior}
-              onValueChange={toggleFonteMaior}
+              value={largeFonts}
+              onValueChange={toggleLargeFonts}
               trackColor={{ false: "#767577", true: "#D4AF37" }}
-              thumbColor={fonteMaior ? "#FFF" : "#f4f3f4"}
+              thumbColor={largeFonts ? "#FFF" : "#f4f3f4"}
             />
           </View>
 
@@ -382,7 +385,7 @@ export default function PerfilProfessor() {
               <Text
                 style={[
                   styles.settingText,
-                  { color: textColor, fontSize: getFontSize(16) },
+                  { color: textColor, fontSize: fs(16) },
                 ]}
               >
                 Alto Contraste
@@ -390,10 +393,10 @@ export default function PerfilProfessor() {
             </View>
 
             <Switch
-              value={altoContraste}
-              onValueChange={toggleAltoContraste}
+              value={highContrast}
+              onValueChange={toggleHighContrast}
               trackColor={{ false: "#767577", true: "#D4AF37" }}
-              thumbColor={altoContraste ? "#FFF" : "#f4f3f4"}
+              thumbColor={highContrast ? "#FFF" : "#f4f3f4"}
             />
           </View>
         </View>
@@ -414,7 +417,7 @@ export default function PerfilProfessor() {
             <Text
               style={[
                 styles.logoutText,
-                { fontSize: getFontSize(16) },
+                { fontSize: fs(16) },
               ]}
             >
               Sair da Conta
@@ -438,7 +441,7 @@ export default function PerfilProfessor() {
             <Text
               style={[
                 styles.modalTitle,
-                { color: textColor, fontSize: getFontSize(20) },
+                { color: textColor, fontSize: fs(20) },
               ]}
             >
               Editar Perfil

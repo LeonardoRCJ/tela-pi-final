@@ -56,7 +56,7 @@ export default function JoinClassGroup() {
 
   const { token } = useContext(AuthContext);
 
-  const { getFontSize } = useContext(AppContext);
+  const { fs } = useContext(AppContext);
 
   const [qrToken, setQrToken] = useState("");
 
@@ -88,7 +88,7 @@ export default function JoinClassGroup() {
               style={[
                 styles.title,
                 {
-                  fontSize: getFontSize(22),
+                  fontSize: fs(22),
                 },
               ]}
             >
@@ -99,7 +99,7 @@ export default function JoinClassGroup() {
               style={[
                 styles.subtitle,
                 {
-                  fontSize: getFontSize(13),
+                  fontSize: fs(13),
                 },
               ]}
             >

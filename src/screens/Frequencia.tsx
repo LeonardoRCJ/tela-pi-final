@@ -11,10 +11,11 @@ import { Ionicons } from "@expo/vector-icons";
 
 // 2. Importar o Contexto
 import { AppContext } from "../context/AppContext";
+import { Attendances } from "../interfaces/practitioner";
 
 export default function FrequenciaAluno({ route, navigation }: any) {
   // 3. Consumir acessibilidade
-  const { getFontSize, getTextColor } = useContext(AppContext);
+  const { fs, colors } = useContext(AppContext);
 
   const alunoName = route?.params?.alunoNome || "Aluno";
   const historico = route?.params?.historico || [];
@@ -22,7 +23,7 @@ export default function FrequenciaAluno({ route, navigation }: any) {
   const stats = useMemo(() => {
     const totalAulas = historico.length;
     const presencas = historico.filter(
-      (item: any) => item.presente === true,
+      (item: any) => item.present === true,
     ).length;
     const faltas = totalAulas - presencas;
     const porcentagem =
@@ -37,17 +38,17 @@ export default function FrequenciaAluno({ route, navigation }: any) {
     return "#E74C3C";
   };
 
-  const renderItem = ({ item }) => (
+  const renderItem = ({ item }:{item: Attendances}) => (
     <View style={styles.historyRow}>
       <View style={styles.dateInfo}>
         <Ionicons
-          name={item.presente ? "checkmark-circle" : "close-circle"}
+          name={item.present ? "checkmark-circle" : "close-circle"}
           size={22}
-          color={item.presente ? "#2ECC71" : "#FF4444"}
+          color={item.present ? "#2ECC71" : "#FF4444"}
         />
         {/* ACESSIBILIDADE: Data do Histórico */}
-        <Text style={[styles.dateText, { fontSize: getFontSize(16) }]}>
-          {item.data}
+        <Text style={[styles.dateText, { fontSize: fs(16) }]}>
+          {item.date}
         </Text>
       </View>
       {/* ACESSIBILIDADE: Tag de Status */}
@@ -55,12 +56,12 @@ export default function FrequenciaAluno({ route, navigation }: any) {
         style={[
           styles.statusTag,
           {
-            color: item.presente ? "#2ECC71" : "#FF4444",
-            fontSize: getFontSize(11),
+            color: item.present ? "#2ECC71" : "#FF4444",
+            fontSize: fs(11),
           },
         ]}
       >
-        {item.presente ? "PRESENTE" : "FALTA"}
+        {item.present ? "PRESENTE" : "FALTA"}
       </Text>
     </View>
   );
@@ -72,18 +73,18 @@ export default function FrequenciaAluno({ route, navigation }: any) {
           <Ionicons name="arrow-back" size={24} color="#D4AF37" />
         </TouchableOpacity>
         {/* ACESSIBILIDADE: Título do Header */}
-        <Text style={[styles.headerTitle, { fontSize: getFontSize(18) }]}>
+        <Text style={[styles.headerTitle, { fontSize: fs(18) }]}>
           Análise de Frequência
         </Text>
       </View>
 
       <View style={styles.statusCard}>
         {/* ACESSIBILIDADE: Nome do Aluno */}
-        <Text style={[styles.studentName, { fontSize: getFontSize(24) }]}>
+        <Text style={[styles.studentName, { fontSize: fs(24) }]}>
           {alunoName}
         </Text>
 
-        <Text style={[styles.statLabel, { fontSize: getFontSize(12) }]}>
+        <Text style={[styles.statLabel, { fontSize: fs(12) }]}>
           Aproveitamento Total
         </Text>
 
@@ -93,7 +94,7 @@ export default function FrequenciaAluno({ route, navigation }: any) {
             styles.statValue,
             {
               color: getColor(stats.porcentagem),
-              fontSize: getFontSize(40),
+              fontSize: fs(40),
             },
           ]}
         >
@@ -114,26 +115,26 @@ export default function FrequenciaAluno({ route, navigation }: any) {
 
         <View style={styles.miniStatsRow}>
           {/* ACESSIBILIDADE: Contadores de Presença/Falta */}
-          <Text style={[styles.miniStatText, { fontSize: getFontSize(12) }]}>
+          <Text style={[styles.miniStatText, { fontSize: fs(12) }]}>
             Presenças: {stats.presencas}
           </Text>
-          <Text style={[styles.miniStatText, { fontSize: getFontSize(12) }]}>
+          <Text style={[styles.miniStatText, { fontSize: fs(12) }]}>
             Faltas: {stats.faltas}
           </Text>
         </View>
       </View>
 
-      <Text style={[styles.sectionTitle, { fontSize: getFontSize(14) }]}>
+      <Text style={[styles.sectionTitle, { fontSize: fs(14) }]}>
         Histórico de Aulas
       </Text>
 
       <FlatList
         data={historico}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.id?.toString()!}
         renderItem={renderItem}
         contentContainerStyle={styles.list}
         ListEmptyComponent={
-          <Text style={[styles.emptyText, { fontSize: getFontSize(14) }]}>
+          <Text style={[styles.emptyText, { fontSize: fs(14) }]}>
             Sem dados registrados
           </Text>
         }

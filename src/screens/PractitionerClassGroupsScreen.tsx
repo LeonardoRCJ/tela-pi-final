@@ -41,7 +41,7 @@ type NavigationProps = NativeStackNavigationProp<RootStackParamList>;
 export default function PractitionerClassGroups() {
   const navigation = useNavigation<NavigationProps>();
 
-  const { getFontSize, getTextColor } = useContext(AppContext);
+  const { fs, colors } = useContext(AppContext);
   const { token, user } = useContext(AuthContext);
 
   const [classGroup, setClassGroup] = useState<SimpleClassGroup | null>(null);
@@ -139,11 +139,11 @@ export default function PractitionerClassGroups() {
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
           <View>
-            <Text style={[styles.headerTitle, { fontSize: getFontSize(24) }]}>
+            <Text style={[styles.headerTitle, { fontSize: fs(24) }]}>
               Minha Turma
             </Text>
             <Text
-              style={[styles.headerSubtitle, { fontSize: getFontSize(12) }]}
+              style={[styles.headerSubtitle, { fontSize: fs(12) }]}
             >
               Sua turma atual
             </Text>
@@ -165,11 +165,11 @@ export default function PractitionerClassGroups() {
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
           <View>
-            <Text style={[styles.headerTitle, { fontSize: getFontSize(24) }]}>
+            <Text style={[styles.headerTitle, { fontSize: fs(24) }]}>
               Minha Turma
             </Text>
             <Text
-              style={[styles.headerSubtitle, { fontSize: getFontSize(12) }]}
+              style={[styles.headerSubtitle, { fontSize: fs(12) }]}
             >
               Sua turma atual
             </Text>
@@ -192,11 +192,11 @@ export default function PractitionerClassGroups() {
               <Ionicons name="school-outline" size={52} color="#D4AF37" />
             </View>
 
-            <Text style={[styles.emptyTitle, { fontSize: getFontSize(20) }]}>
+            <Text style={[styles.emptyTitle, { fontSize: fs(20) }]}>
               Você não está em{"\n"}nenhuma turma
             </Text>
 
-            <Text style={[styles.emptySubtitle, { fontSize: getFontSize(14) }]}>
+            <Text style={[styles.emptySubtitle, { fontSize: fs(14) }]}>
               Peça ao seu professor o{"\n"}QR Code para entrar.
             </Text>
 
@@ -212,7 +212,7 @@ export default function PractitionerClassGroups() {
                 style={{ marginRight: 10 }}
               />
               <Text
-                style={[styles.scanButtonText, { fontSize: getFontSize(15) }]}
+                style={[styles.scanButtonText, { fontSize: fs(15) }]}
               >
                 Escanear QR Code
               </Text>
@@ -226,7 +226,7 @@ export default function PractitionerClassGroups() {
               }
             >
               <Text
-                style={[styles.codeButtonText, { fontSize: getFontSize(14) }]}
+                style={[styles.codeButtonText, { fontSize: fs(14) }]}
               >
                 Digitar código manualmente
               </Text>
@@ -246,10 +246,10 @@ export default function PractitionerClassGroups() {
       {/* HEADER */}
       <View style={styles.header}>
         <View>
-          <Text style={[styles.headerTitle, { fontSize: getFontSize(24) }]}>
+          <Text style={[styles.headerTitle, { fontSize: fs(24) }]}>
             Minha Turma
           </Text>
-          <Text style={[styles.headerSubtitle, { fontSize: getFontSize(12) }]}>
+          <Text style={[styles.headerSubtitle, { fontSize: fs(12) }]}>
             Sua turma atual
           </Text>
         </View>
@@ -274,13 +274,13 @@ export default function PractitionerClassGroups() {
             </View>
 
             <View style={styles.classCardBadge}>
-              <Text style={[styles.badgeText, { fontSize: getFontSize(11) }]}>
+              <Text style={[styles.badgeText, { fontSize: fs(11) }]}>
                 INSCRITO
               </Text>
             </View>
           </View>
 
-          <Text style={[styles.className, { fontSize: getFontSize(22) }]}>
+          <Text style={[styles.className, { fontSize: fs(22) }]}>
             {classGroup.name}
           </Text>
 
@@ -291,7 +291,7 @@ export default function PractitionerClassGroups() {
             <Text
               style={[
                 styles.infoText,
-                { fontSize: getFontSize(14), color: getTextColor("#666") },
+                { fontSize: fs(14), color: colors.card },
               ]}
             >
               {classGroup.countPractitioners}{" "}
@@ -321,7 +321,7 @@ export default function PractitionerClassGroups() {
             style={{ marginRight: 10 }}
           />
           <Text
-            style={[styles.detailsButtonText, { fontSize: getFontSize(15) }]}
+            style={[styles.detailsButtonText, { fontSize: fs(15) }]}
           >
             Ver minhas frequências
           </Text>
@@ -339,7 +339,7 @@ export default function PractitionerClassGroups() {
             color="#FF4444"
             style={{ marginRight: 10 }}
           />
-          <Text style={[styles.leaveButtonText, { fontSize: getFontSize(15) }]}>
+          <Text style={[styles.leaveButtonText, { fontSize: fs(15) }]}>
             Sair da turma
           </Text>
         </TouchableOpacity>

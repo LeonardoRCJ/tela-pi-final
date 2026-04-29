@@ -1,234 +1,241 @@
-import React, { useState, useEffect, useContext, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import {
   View,
   Text,
   FlatList,
   StyleSheet,
   TouchableOpacity,
-  Alert,
   Modal,
   TextInput,
   KeyboardAvoidingView,
   Platform,
   RefreshControl,
+  Pressable,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import  DateTimePicker, { DateTimePickerEvent }  from '@react-native-community/datetimepicker'
-
-// Importar o Contexto
-import { AppContext } from "../context/AppContext";
+import DateTimePicker, {
+  DateTimePickerEvent,
+} from "@react-native-community/datetimepicker";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { CommonActions } from "@react-navigation/native";
+import Toast from "react-native-toast-message";
 import api from "../services/api";
 import { Attendances, Practitioner } from "../interfaces/practitioner";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import Toast from "react-native-toast-message";
-
-export type RootStackParamList = {
-  SignIn: undefined;
-  SignUp: undefined;
-  Main: {
-    screen?: string;
-  };
-  DetalheTurma: undefined;
-  FrequenciaAluno: undefined;
-};
-
-type NavigationProps =
-  NativeStackNavigationProp<
-    RootStackParamList
-  >;
 
 export default function DetalheTurma({ route, navigation }: any) {
-  const { getFontSize, getTextColor } = useContext(AppContext);
-
   const { classGroupId, classGroupName } = route.params;
 
-  const [dataAtual, setDataAtual] = useState<Date>(new Date());
-  const [refreshing, setRefreshing] = useState<boolean>(false);
-  const [practitioners, setPractitioners] = useState<Practitioner[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [modalVisible, setModalVisible] = useState<boolean>(false);
-  const [newName, setNewName] = useState<string>("");
-  const [newPhone, setNewPhone] = useState<string>("");
-  const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
-  const [dataFormatada, setDataFormatada] = useState(dataAtual.toLocaleDateString('pt-BR'));
+  const [date, setDate] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
-  // ESTADO PARA EDIÇÃO
-  const [editingId, setEditingId] = useState<number | undefined | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
+  const [students, setStudents] = useState<Practitioner[]>([]);
 
+  const [modalVisible, setModalVisible] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
 
-  const getPractitioners = async () => {
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+
+  const formattedDate = useMemo(
+    () => date.toLocaleDateString("pt-BR"),
+    [date],
+  );
+
+  async function loadStudents() {
     try {
-      const response = await api.get(`/class-groups/${classGroupId}/practitioners`);
-
-      setPractitioners(response.data);
-    } catch (error: any) {
+      const { data } = await api.get(
+        `/class-groups/${classGroupId}/practitioners`,
+      );
+      setStudents(data);
+    } catch (err: any) {
       Toast.show({
         type: "error",
         text1: "Erro",
-        text2: error.response.data.message
-      })
+        text2: err?.response?.data?.message || "Falha ao carregar alunos",
+      });
     }
-  };
+  }
 
   useEffect(() => {
-    getPractitioners();
-  }, [classGroupId]);
+    loadStudents();
+  }, []);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    try {
-      await getPractitioners();
-    }catch(err: any) {
-      console.log("Erro: ", err.response.data.message);
-    } finally {
-      setRefreshing(false);
-    }
-  },[])
+    await loadStudents();
+    setRefreshing(false);
+  }, []);
 
-  const mudarDia = (dias: number) => {
-    const novaData = new Date(dataAtual);
-    novaData.setDate(novaData.getDate() + dias);
-    setDataAtual(novaData);
-  };
+  function changeDay(value: number) {
+    const next = new Date(date);
+    next.setDate(next.getDate() + value);
+    setDate(next);
+  }
 
-  const closeModal = () => {
+  function closeModal() {
     setModalVisible(false);
-    setNewName("");
-    setNewPhone("");
     setEditingId(null);
-  };
+    setName("");
+    setPhone("");
+  }
 
-  const onChangeDate = (event: DateTimePickerEvent, selectedDate: any) => {
-    setShowDatePicker(false);
-    if (selectedDate) setDataAtual(selectedDate);
-  };
-
-  const setupEdit = (practitioner: Practitioner) => {
-    setEditingId(practitioner.id);
-    setNewName(practitioner.name);
-    setNewPhone(practitioner.phone);
+  function openCreate() {
+    closeModal();
     setModalVisible(true);
-  };
+  }
 
-  const savePractitioner = async () => {
+  function openEdit(student: Practitioner) {
+    setEditingId(student.id!);
+    setName(student.name);
+    setPhone(student.phone);
+    setModalVisible(true);
+  }
+
+  async function saveStudent() {
     try {
       await api.post(`/class-groups/${classGroupId}/practitioners`, {
-        name: newName,
-        phone: newPhone,
-        classGroupId: classGroupId,
+        name,
+        phone,
+        classGroupId,
       });
 
-      onRefresh();
-    } catch (err: any) {
-      console.log(err.response.data.message);
+      Toast.show({
+        type: "success",
+        text1: "Aluno cadastrado",
+      });
+
+      closeModal();
+      loadStudents();
+    } catch {
+      Toast.show({
+        type: "error",
+        text1: "Erro ao cadastrar",
+      });
     }
+  }
 
-    closeModal();
-  };
+  function getFrequency(att: Attendances[]) {
+    if (!att || att.length === 0) return "0%";
 
-  const marcarStatus = (practitionerId: number, statusDesejado: any) => {
-    setPractitioners((prev) =>
-      prev.map((aluno: Practitioner) => {
-        if (aluno.id === practitionerId) {
-          const historico = aluno.attendances || [];
-          const registroHoje = historico.find((h: any) => h.data === dataFormatada);
+    const total = att.length;
+    const present = att.filter((x) => x.present).length;
 
-          let novoHistorico;
-          if (registroHoje && registroHoje.present === statusDesejado) {
-            novoHistorico = historico.filter((h: any) => h.data !== dataFormatada);
-          } else {
-            const outroRegistros = historico.filter(
-              (h: any) => h.data !== dataFormatada,
-            );
-            novoHistorico = [
-              ...outroRegistros,
-              {
-                id: Date.now().toString(),
-                data: dataFormatada,
-                presente: statusDesejado,
-              },
-            ];
-          }
-          return { ...aluno, historico: novoHistorico };
+    return `${Math.round((present / total) * 100)}%`;
+  }
+
+  function markAttendance(id: number, present: boolean) {
+    setStudents((prev) =>
+      prev.map((item) => {
+        if (item.id !== id) return item;
+
+        const current = item.attendances || [];
+        const today = current.find((a) => a.date === formattedDate);
+
+        let updated;
+
+        if (today && today.present === present) {
+          updated = current.filter((a) => a.date !== formattedDate);
+        } else {
+          updated = [
+            ...current.filter((a) => a.date !== formattedDate),
+            {
+              id: Date.now(),
+              date: formattedDate,
+              present,
+            },
+          ];
         }
-        return aluno;
+
+        return { ...item, attendances: updated };
       }),
     );
-  };
+  }
 
-  const calcularFrequencia = (historico: Attendances[]) => {
-    if ( historico.length === 0) return "0%";
-    const presencas = historico.filter((h) => h.present === true).length;
-    const totalAulas = historico.length;
-    const porcentagem = Math.round((presencas / totalAulas) * 100);
-    return `${porcentagem}%`;
-  };
+  const renderItem = ({ item }: { item: Practitioner }) => {
+    const today = item.attendances?.find(
+      (x) => x.date === formattedDate,
+    );
 
-  const renderPractitioner = ({ item }: {item: Practitioner}) => {
-    const registroHoje = item.attendances?.find(h => h.date === dataFormatada);
-    const isPresente = registroHoje?.present === true;
-    const isFaltante = registroHoje?.present === false;
+    const isPresent = today?.present === true;
+    const isAbsent = today?.present === false;
 
     return (
-      <View style={[
-        styles.card, 
-        isPresente && styles.cardPresente,
-        isFaltante && styles.cardFalta
-      ]}>
-        <View style={styles.info}>
-          <Text style={[styles.nomeText, { fontSize: getFontSize(16) }]}>{item.name}</Text>
-            <Text style={{color: '#D4AF37'}}> {calcularFrequencia(item.attendances)}</Text>
+      <View
+        style={[
+          styles.card,
+          isPresent && styles.cardPresent,
+          isAbsent && styles.cardAbsent,
+        ]}
+      >
+        <View style={{ flex: 1 }}>
+          <Text style={styles.studentName}>{item.practitionerName}</Text>
+          <Text style={styles.frequency}>
+            Frequência {getFrequency(item.attendances)}
+          </Text>
         </View>
 
-        <View style={styles.actionButtons}>
-          <TouchableOpacity style={styles.btnAction} onPress={() => setupEdit(item)}>
-            <Ionicons name="create-outline" size={20} color="#888" />
-          </TouchableOpacity>
-
-          <TouchableOpacity 
-            style={styles.btnAction}
-            onPress={() => navigation.navigate('FrequenciaAluno', { 
-              alunoNome: item.name, 
-              historico: item.attendances || []
-            })}
+        <View style={styles.actions}>
+          <TouchableOpacity
+            style={styles.iconBtn}
+            onPress={() => openEdit(item)}
           >
-            <Ionicons name="stats-chart" size={20} color="#D4AF37" />
-          </TouchableOpacity>
-
-          <TouchableOpacity 
-            style={[styles.btnStatus, isFaltante && styles.btnFaltaAtivo]}
-            onPress={() => marcarStatus(item.id!, false)}
-          >
-            <Ionicons 
-              name={isFaltante ? "close-circle" : "close-circle-outline"} 
-              size={26} 
-              color={isFaltante ? "#FFF" : "#444"} 
+            <Ionicons
+              name="create-outline"
+              size={20}
+              color="#D4AF37"
             />
           </TouchableOpacity>
 
-          <TouchableOpacity 
-            style={[styles.btnStatus, isPresente && styles.btnCheckAtivo]}
-            onPress={() => marcarStatus(item.id!, true)}
+          <TouchableOpacity
+            style={[
+              styles.statusBtn,
+              isAbsent && { backgroundColor: "#FF4444" },
+            ]}
+            onPress={() => markAttendance(item.id!, false)}
           >
-            <Ionicons 
-              name={isPresente ? "checkmark-circle" : "add-circle-outline"} 
-              size={26} 
-              color={isPresente ? "#0F0F0F" : "#444"} 
+            <Ionicons
+              name={
+                isAbsent
+                  ? "close-circle"
+                  : "close-circle-outline"
+              }
+              size={24}
+              color={isAbsent ? "#FFF" : "#666"}
             />
           </TouchableOpacity>
 
-          <TouchableOpacity 
-            style={styles.btnAction}
-            onPress={() => {
-              Alert.alert("Remover", `Remover ${item.name}?`, [
-                { text: 'Cancelar', style: 'cancel' },
-                { text: 'Remover', style: 'destructive', onPress: () => setPractitioners(prev => prev.filter(a => a.id !== item.id)) }
-              ])
-            }}
+          <TouchableOpacity
+            style={[
+              styles.statusBtn,
+              isPresent && { backgroundColor: "#2ECC71" },
+            ]}
+            onPress={() => markAttendance(item.id!, true)}
           >
-            <Ionicons name="trash-outline" size={20} color="#FF4444" />
+            <Ionicons
+              name={
+                isPresent
+                  ? "checkmark-circle"
+                  : "checkmark-circle-outline"
+              }
+              size={24}
+              color={isPresent ? "#0F0F0F" : "#666"}
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.iconBtn}
+            onPress={() =>
+              navigation.navigate("FrequenciaAluno", {
+                alunoNome: item.name,
+                historico: item.attendances || [],
+              })
+            }
+          >
+            <Ionicons
+              name="stats-chart-outline"
+              size={20}
+              color="#AAA"
+            />
           </TouchableOpacity>
         </View>
       </View>
@@ -236,90 +243,177 @@ export default function DetalheTurma({ route, navigation }: any) {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.root}>
+      {/* HEADER */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name="chevron-back" size={28} color="#D4AF37" />
+        <TouchableOpacity
+          style={styles.backBtn}
+          onPress={() => navigation.goBack()}
+        >
+          <Ionicons
+            name="chevron-back"
+            size={22}
+            color="#D4AF37"
+          />
         </TouchableOpacity>
-        
-        <View style={styles.dateController}>
-          <TouchableOpacity onPress={() => mudarDia(-1)} style={styles.btnDateNav}>
-            <Ionicons name="caret-back" size={20} color="#D4AF37" />
-          </TouchableOpacity>
-          
-          <TouchableOpacity 
-            style={{ alignItems: 'center', minWidth: 150 }}
+
+        <View style={{ alignItems: "center" }}>
+          <Text style={styles.title}>{classGroupName}</Text>
+
+          <TouchableOpacity
+            style={styles.dateBox}
             onPress={() => setShowDatePicker(true)}
           >
-            <Text style={[styles.title, { fontSize: getFontSize(16) }]}>{classGroupName}</Text>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Text style={[styles.subtitle, { fontSize: getFontSize(12) }]}>{dataFormatada}</Text>
-                <Ionicons name="calendar-outline" size={12} color="#D4AF37" style={{ marginLeft: 5 }} />
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={() => mudarDia(1)} style={styles.btnDateNav}>
-            <Ionicons name="caret-forward" size={20} color="#D4AF37" />
+            <Ionicons
+              name="calendar-outline"
+              size={14}
+              color="#D4AF37"
+            />
+            <Text style={styles.dateText}>{formattedDate}</Text>
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity style={styles.btnAdd} onPress={() => setModalVisible(true)}>
-          <Ionicons name="person-add" size={22} color="#0F0F0F" />
+        <TouchableOpacity
+          style={styles.addBtn}
+          onPress={openCreate}
+        >
+          <Ionicons
+            name="person-add"
+            size={20}
+            color="#0F0F0F"
+          />
+        </TouchableOpacity>
+      </View>
+
+      {/* DATE NAV */}
+      <View style={styles.dateNav}>
+        <TouchableOpacity
+          style={styles.dayBtn}
+          onPress={() => changeDay(-1)}
+        >
+          <Ionicons
+            name="chevron-back"
+            size={18}
+            color="#D4AF37"
+          />
+        </TouchableOpacity>
+
+        <Text style={styles.dayText}>Selecionar Dia</Text>
+
+        <TouchableOpacity
+          style={styles.dayBtn}
+          onPress={() => changeDay(1)}
+        >
+          <Ionicons
+            name="chevron-forward"
+            size={18}
+            color="#D4AF37"
+          />
         </TouchableOpacity>
       </View>
 
       {showDatePicker && (
         <DateTimePicker
-          value={dataAtual}
+          value={date}
           mode="date"
-          display={Platform.OS === 'ios' ? 'inline' : 'default'}
-          onChange={onChangeDate}
+          display={
+            Platform.OS === "ios" ? "inline" : "default"
+          }
+          onChange={(
+            event: DateTimePickerEvent,
+            selectedDate?: Date,
+          ) => {
+            setShowDatePicker(false);
+            if (selectedDate) setDate(selectedDate);
+          }}
         />
       )}
 
+      {/* LIST */}
       <FlatList
-        data={practitioners}
-        renderItem={renderPractitioner}
-        keyExtractor={item => item.id?.toString()!}
+        data={students}
+        keyExtractor={(item) => item.id!.toString()}
+        renderItem={renderItem}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+          />
         }
-        contentContainerStyle={{ padding: 20, flexGrow: 1 }}
+        contentContainerStyle={{
+          padding: 18,
+          paddingBottom: 30,
+          flexGrow: 1,
+        }}
+        ListEmptyComponent={() => (
+          <View style={styles.empty}>
+            <Ionicons
+              name="people-outline"
+              size={54}
+              color="#333"
+            />
+            <Text style={styles.emptyText}>
+              Nenhum aluno cadastrado
+            </Text>
+          </View>
+        )}
       />
 
-      <Modal visible={modalVisible} transparent animationType="slide">
-        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={[styles.modalTitle, { fontSize: getFontSize(20) }]}>
-              {editingId ? 'Editar Atleta' : 'Novo Aluno'}
+      {/* MODAL */}
+      <Modal
+        visible={modalVisible}
+        transparent
+        animationType="fade"
+      >
+        <KeyboardAvoidingView
+          style={styles.overlay}
+          behavior={
+            Platform.OS === "ios" ? "padding" : undefined
+          }
+        >
+          <View style={styles.modal}>
+            <Text style={styles.modalTitle}>
+              {editingId
+                ? "Editar aluno"
+                : "Novo aluno"}
             </Text>
-            
-            <TextInput 
-              style={[styles.input, { fontSize: getFontSize(16) }]} 
-              placeholder="Nome do Atleta" 
-              placeholderTextColor="#555" 
-              value={newName} 
-              onChangeText={setNewName} 
+
+            <TextInput
+              placeholder="Nome"
+              placeholderTextColor="#666"
+              style={styles.input}
+              value={name}
+              onChangeText={setName}
             />
 
-            <TextInput 
-              style={[styles.input, { fontSize: getFontSize(16) }]} 
-              placeholder="Telefone do Atleta" 
-              placeholderTextColor="#555" 
-              value={newPhone} 
-              onChangeText={setNewPhone} 
+            <TextInput
+              placeholder="Telefone"
+              placeholderTextColor="#666"
+              style={styles.input}
+              value={phone}
+              onChangeText={setPhone}
             />
 
-            <View style={styles.modalButtonsRow}>
-              <TouchableOpacity style={styles.btnVoltar} onPress={closeModal}>
-                <Text style={[styles.btnVoltarText, { fontSize: getFontSize(14) }]}>VOLTAR</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity style={styles.btnConfirmar} onPress={savePractitioner}>
-                <Text style={[styles.btnConfirmarText, { fontSize: getFontSize(14) }]}>
-                  {editingId ? 'SALVAR' : 'CONFIRMAR'}
+            <View style={styles.modalRow}>
+              <Pressable
+                style={styles.cancelBtn}
+                onPress={closeModal}
+              >
+                <Text style={styles.cancelText}>
+                  CANCELAR
                 </Text>
-              </TouchableOpacity>
+              </Pressable>
+
+              <Pressable
+                style={styles.saveBtn}
+                onPress={saveStudent}
+              >
+                <Text style={styles.saveText}>
+                  {editingId
+                    ? "SALVAR"
+                    : "CADASTRAR"}
+                </Text>
+              </Pressable>
             </View>
           </View>
         </KeyboardAvoidingView>
@@ -329,113 +423,204 @@ export default function DetalheTurma({ route, navigation }: any) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#0F0F0F" },
+  root: {
+    flex: 1,
+    backgroundColor: "#0A0A0A",
+  },
+
   header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
     paddingHorizontal: 20,
-    paddingVertical: 15,
-    paddingTop: 50,
-    borderBottomWidth: 1,
-    borderBottomColor: "#1A1A1A",
-  },
-  dateController: {
+    paddingTop: 12,
+    paddingBottom: 16,
     flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  btnDateNav: { padding: 10 },
-  title: { color: "#FFF", fontWeight: "800", textAlign: "center" },
-  subtitle: { color: "#D4AF37", marginTop: 2, textAlign: "center" },
-  btnAdd: {
-    backgroundColor: "#D4AF37",
-    width: 40,
-    height: 40,
-    borderRadius: 10,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  card: {
-    backgroundColor: "#1A1A1A",
-    flexDirection: "row",
-    padding: 15,
-    borderRadius: 15,
-    marginBottom: 10,
     alignItems: "center",
     justifyContent: "space-between",
+    borderBottomWidth: 1,
+    borderBottomColor: "#161616",
   },
-  cardPresente: {
+
+  backBtn: {
+    width: 42,
+    height: 42,
+    borderRadius: 14,
+    backgroundColor: "#151515",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  addBtn: {
+    width: 42,
+    height: 42,
+    borderRadius: 14,
+    backgroundColor: "#D4AF37",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  title: {
+    color: "#FFF",
+    fontSize: 17,
+    fontWeight: "800",
+  },
+
+  dateBox: {
+    marginTop: 6,
+    flexDirection: "row",
+    gap: 6,
+    alignItems: "center",
+  },
+
+  dateText: {
+    color: "#AAA",
+    fontSize: 12,
+  },
+
+  dateNav: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: 14,
+    gap: 16,
+  },
+
+  dayBtn: {
+    width: 34,
+    height: 34,
+    borderRadius: 10,
+    backgroundColor: "#141414",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  dayText: {
+    color: "#888",
+    fontSize: 13,
+  },
+
+  card: {
+    backgroundColor: "#141414",
+    borderRadius: 18,
+    padding: 16,
+    marginBottom: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#1F1F1F",
+  },
+
+  cardPresent: {
     borderLeftWidth: 4,
     borderLeftColor: "#2ECC71",
-    backgroundColor: "#1e1e1e",
   },
-  cardFalta: {
+
+  cardAbsent: {
     borderLeftWidth: 4,
-    borderLeftColor: "#E74C3C",
-    backgroundColor: "#1e1e1e",
+    borderLeftColor: "#FF4444",
   },
-  info: { flex: 1 },
-  nomeText: { color: "#FFF", fontWeight: "bold" },
-  faixaText: { color: "#888" },
-  actionButtons: { flexDirection: "row", alignItems: "center" },
-  btnAction: { padding: 8 },
-  btnStatus: { padding: 4, borderRadius: 20, marginHorizontal: 2 },
-  btnCheckAtivo: { backgroundColor: "#2ECC71" },
-  btnFaltaAtivo: { backgroundColor: "#E74C3C" },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.8)",
-    justifyContent: "flex-end",
-  },
-  modalContent: {
-    backgroundColor: "#1A1A1A",
-    borderTopLeftRadius: 25,
-    borderTopRightRadius: 25,
-    padding: 25,
-    paddingBottom: 40,
-  },
-  modalTitle: { color: "#D4AF37", fontWeight: "bold", marginBottom: 20 },
-  label: { color: "#888", marginBottom: 8, textTransform: "uppercase" },
-  input: {
-    backgroundColor: "#252525",
+
+  studentName: {
     color: "#FFF",
-    padding: 15,
-    borderRadius: 12,
-    marginBottom: 20,
+    fontSize: 15,
+    fontWeight: "700",
   },
-  faixaRow: {
+
+  frequency: {
+    color: "#D4AF37",
+    fontSize: 12,
+    marginTop: 4,
+  },
+
+  actions: {
     flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8,
-    marginBottom: 30,
+    alignItems: "center",
+    gap: 6,
   },
-  faixaBadge: {
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#333",
+
+  iconBtn: {
+    padding: 6,
   },
-  faixaBadgeAtiva: { backgroundColor: "#D4AF37", borderColor: "#D4AF37" },
-  faixaBadgeText: { color: "#888", fontWeight: "bold" },
-  faixaBadgeTextAtivo: { color: "#0F0F0F" },
-  modalButtonsRow: { flexDirection: "row", gap: 10 },
-  btnVoltar: {
+
+  statusBtn: {
+    width: 34,
+    height: 34,
+    borderRadius: 10,
+    backgroundColor: "#1D1D1D",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  empty: {
     flex: 1,
-    padding: 18,
-    borderRadius: 15,
+    justifyContent: "center",
     alignItems: "center",
+    marginTop: 90,
+  },
+
+  emptyText: {
+    color: "#666",
+    marginTop: 10,
+  },
+
+  overlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,.78)",
+    justifyContent: "center",
+    padding: 22,
+  },
+
+  modal: {
+    backgroundColor: "#141414",
+    borderRadius: 24,
+    padding: 22,
     borderWidth: 1,
-    borderColor: "#333",
+    borderColor: "#222",
   },
-  btnVoltarText: { color: "#888", fontWeight: "bold" },
-  btnConfirmar: {
-    flex: 2,
-    backgroundColor: "#D4AF37",
-    padding: 18,
-    borderRadius: 15,
+
+  modalTitle: {
+    color: "#FFF",
+    fontSize: 19,
+    fontWeight: "800",
+    marginBottom: 18,
+  },
+
+  input: {
+    backgroundColor: "#1D1D1D",
+    borderRadius: 14,
+    paddingHorizontal: 16,
+    paddingVertical: 15,
+    color: "#FFF",
+    marginBottom: 12,
+  },
+
+  modalRow: {
+    flexDirection: "row",
+    gap: 10,
+    marginTop: 8,
+  },
+
+  cancelBtn: {
+    flex: 1,
+    borderRadius: 14,
+    paddingVertical: 15,
+    backgroundColor: "#1D1D1D",
     alignItems: "center",
   },
-  btnConfirmarText: { color: "#0F0F0F", fontWeight: "bold" },
+
+  saveBtn: {
+    flex: 1.4,
+    borderRadius: 14,
+    paddingVertical: 15,
+    backgroundColor: "#D4AF37",
+    alignItems: "center",
+  },
+
+  cancelText: {
+    color: "#AAA",
+    fontWeight: "700",
+  },
+
+  saveText: {
+    color: "#0A0A0A",
+    fontWeight: "900",
+  },
 });

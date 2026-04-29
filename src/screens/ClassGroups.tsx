@@ -1,308 +1,548 @@
-import React, { useState, useContext, useEffect, useCallback } from "react";
+import React, {
+  useState,
+  useContext,
+  useEffect,
+  useCallback,
+} from "react";
 import {
   View,
   Text,
   StyleSheet,
   FlatList,
   TouchableOpacity,
-  Alert,
   Modal,
   KeyboardAvoidingView,
   Platform,
   TextInput,
   RefreshControl,
 } from "react-native";
-import { AppContext } from "../context/AppContext";
 import { Ionicons } from "@expo/vector-icons";
-import { CommonActions, useNavigation } from "@react-navigation/native";
-import api from "../services/api";
-import { ClassGroup, SimpleClassGroup } from "../interfaces/classgroup";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
-import { AuthContext } from "../context/AuthContext";
+  CommonActions,
+  useNavigation,
+} from "@react-navigation/native";
 import Toast from "react-native-toast-message";
+import QRCode from "react-native-qrcode-svg";
+
+import api from "../services/api";
+import { AuthContext } from "../context/AuthContext";
+import { ThemeContext } from "../context/ThemeContext";
+import { SimpleClassGroup } from "../interfaces/classgroup";
 
 export default function ClassGroups() {
-  const { getFontSize, getTextColor } = useContext(AppContext);
-
+  const navigation = useNavigation<any>();
   const { token } = useContext(AuthContext);
 
-  const navigation = useNavigation();
+  const {
+    colors,
+    fs,
+  } = useContext(ThemeContext);
 
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [refreshing, setRefreshing] = useState<boolean>(false);
+  const [classGroups, setClassGroups] =
+    useState<SimpleClassGroup[]>([]);
 
-  const [selectedClassGroup, setSelectedClassGroup] =
-    useState<SimpleClassGroup | null>(null);
-  const [classGroups, setClassGroups] = useState<SimpleClassGroup[]>([]);
-  const [modalVisible, setModalVisible] = useState<boolean>(false);
-  const [newClassGroupName, setNewClassGroupName] = useState<string>("");
-  const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
+  const [refreshing, setRefreshing] =
+    useState(false);
 
-  // ESTADOS PARA EDIÇÃO
-  const [editingId, setEditingId] = useState<number | null>(null);
+  const [modalVisible, setModalVisible] =
+    useState(false);
 
-  const getClassGroups = async () => {
-    setIsLoading(true);
+  const [editingId, setEditingId] =
+    useState<number | null>(null);
+
+  const [name, setName] = useState("");
+
+  // DELETE CONFIRM
+  const [deleteVisible, setDeleteVisible] =
+    useState(false);
+
+  const [selectedDelete, setSelectedDelete] =
+    useState<SimpleClassGroup | null>(
+      null,
+    );
+
+  // QR MODAL
+  const [qrVisible, setQrVisible] =
+    useState(false);
+
+  const [selectedQr, setSelectedQr] =
+    useState<SimpleClassGroup | null>(
+      null,
+    );
+
+  async function getClassGroups() {
     try {
-      const response = await api.get("/class-groups");
+      const response =
+        await api.get("/class-groups");
 
       setClassGroups(response.data);
-    } catch (err: any) {
-      console.log("Erro: ", err.response.data.message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    } catch {}
+  }
 
   useEffect(() => {
     getClassGroups();
   }, []);
 
-  const onRefresh = useCallback(async () => {
-    setRefreshing(true);
-
-    try {
+  const onRefresh = useCallback(
+    async () => {
+      setRefreshing(true);
       await getClassGroups();
-    } catch (err: any) {
-      console.log("Erro, ", err.response.data.message);
-    } finally {
       setRefreshing(false);
-    }
-  }, []);
+    },
+    [],
+  );
 
-  const fecharModal = () => {
-    setModalVisible(false);
-    setNewClassGroupName("");
-    setEditingId(null); // Reseta o estado de edição
-  };
-
-  const prepararEdicao = (turma: SimpleClassGroup) => {
-    setEditingId(turma.id!);
-    setNewClassGroupName(turma.name);
+  function openCreate() {
+    setEditingId(null);
+    setName("");
     setModalVisible(true);
-  };
+  }
 
-  const saveClassGroup = async () => {
-    if (!newClassGroupName.trim()) {
-      Alert.alert("Erro", "Digite o nome da turma");
-      return;
-    }
+  function openEdit(
+    item: SimpleClassGroup,
+  ) {
+    setEditingId(item.id!);
+    setName(item.name);
+    setModalVisible(true);
+  }
 
+  function closeModal() {
+    setModalVisible(false);
+    setName("");
+    setEditingId(null);
+  }
+
+  function openDelete(
+    item: SimpleClassGroup,
+  ) {
+    setSelectedDelete(item);
+    setDeleteVisible(true);
+  }
+
+  function openQr(
+    item: SimpleClassGroup,
+  ) {
+    setSelectedQr(item);
+    setQrVisible(true);
+  }
+
+  async function save() {
     try {
-     await api.post(
-        "/class-groups",
-        {
-          name: newClassGroupName,
-        },
-        {
-          headers: {
-            "Content-type": "application/json",
+      if (!name.trim()) return;
+
+      if (editingId) {
+        await api.patch(
+          `/class-groups/${editingId}`,
+          null,
+          {
+            params: { name },
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           },
-        },
-      );
+        );
 
-      console.log("Turma criada com sucesso!");
-      onRefresh();
-    } catch (err: any) {
-      console.log(err.response.data.message);
+        Toast.show({
+          type: "success",
+          text1:
+            "Turma atualizada",
+        });
+      } else {
+        await api.post(
+          "/class-groups",
+          {
+            name,
+          },
+        );
+
+        Toast.show({
+          type: "success",
+          text1:
+            "Turma criada",
+        });
+      }
+
+      closeModal();
+      getClassGroups();
+    } catch {
+      Toast.show({
+        type: "error",
+        text1:
+          "Erro ao salvar",
+      });
     }
-    fecharModal();
-  };
+  }
 
-  const updateClassGroup = async (id: number) => {
-    if (!newClassGroupName.trim()) {
-      Alert.alert("Erro", "Digite o nome da turma");
-      return;
-    }
-
+  async function remove(id: number) {
     try {
-     await api.patch(
-        `/class-groups/${id}`, null,
-        {
-          params: {
-            name: newClassGroupName
-          },
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        },
+      await api.delete(
+        `/class-groups/${id}`,
       );
 
       Toast.show({
-        type: 'success',
-        text1: 'Sucesso!',
-        text2: 'Foto do usuário atualizada com sucesso!'
-      })
-      onRefresh();
-    } catch (err: any) {
-      console.log(err.response.data.message);
+        type: "success",
+        text1:
+          "Turma removida",
+      });
+
+      setDeleteVisible(false);
+      getClassGroups();
+    } catch {
+      Toast.show({
+        type: "error",
+        text1:
+          "Erro ao remover",
+      });
     }
-    fecharModal();
-  };
+  }
 
-  const handleRemoveTurma = async (id: number) => {
-    await api.delete(`/class-groups/${id}`);
-
-    onRefresh();
-  };
-
-
-  const renderClassGroup = ({ item }: { item: SimpleClassGroup }) => (
-    <View style={styles.card}>
+  function renderItem({
+    item,
+  }: {
+    item: SimpleClassGroup;
+  }) {
+    return (
       <TouchableOpacity
-        style={styles.cardInfo}
-        activeOpacity={0.7}
+        activeOpacity={0.9}
+        style={[
+          styles.card,
+          {
+            backgroundColor:
+              colors.card,
+            borderColor:
+              colors.cardBorder,
+          },
+        ]}
         onPress={() =>
           navigation.dispatch(
-            CommonActions.navigate("DetalheTurma", {
-              classGroupId: item.id,
-              classGroupName: item.name,
-            }),
+            CommonActions.navigate(
+              "DetalheTurma",
+              {
+                classGroupId:
+                  item.id,
+                classGroupName:
+                  item.name,
+                qrToken:
+                  item.qrToken,
+              },
+            ),
           )
         }
       >
-        <View style={styles.cardHeader}>
-          <Ionicons
-            name="people"
-            size={18}
-            color="#D4AF37"
-            style={{ marginRight: 8 }}
-          />
-          <Text style={[styles.turmaNome, { fontSize: getFontSize(17) }]}>
-            {item.name}
-          </Text>
-        </View>
-        <Text
-          style={[
-            styles.turmaDetalhe,
-            { fontSize: getFontSize(13), color: getTextColor("#666") },
-          ]}
-        >
-          {item.countPractitioners} Alunos
-        </Text>
-      </TouchableOpacity>
+        <View style={styles.row}>
+          <View
+            style={[
+              styles.iconBox,
+              {
+                backgroundColor:
+                  colors.accent +
+                  "20",
+              },
+            ]}
+          >
+            <Ionicons
+              name="people"
+              size={20}
+              color={
+                colors.accent
+              }
+            />
+          </View>
 
-      {/* BOTÃO EDITAR */}
-      <TouchableOpacity
-        style={styles.btnIcon}
-        onPress={() => prepararEdicao(item)}
-      >
-        <Ionicons name="create-outline" size={22} color="#D4AF37" />
-      </TouchableOpacity>
+          <View
+            style={{
+              flex: 1,
+            }}
+          >
+            <Text
+              style={[
+                styles.name,
+                {
+                  color:
+                    colors.text,
+                  fontSize:
+                    fs(17),
+                },
+              ]}
+            >
+              {item.name}
+            </Text>
 
-      {/* BOTÃO EXCLUIR */}
-      <TouchableOpacity
-        style={styles.btnIcon}
-        onPress={() => {
-          setSelectedClassGroup(item);
-          setOpenDeleteDialog(true);
-        }}
-      >
-        <Ionicons name="trash-outline" size={22} color="#FF4444" />
-      </TouchableOpacity>
-    </View>
-  );
-
-  const isDisabled = !newClassGroupName.trim();
-
-  return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <View>
-          <Text style={[styles.headerTitle, { fontSize: getFontSize(24) }]}>
-            Minhas Turmas
-          </Text>
-          <Text style={[styles.headerSubtitle, { fontSize: getFontSize(12) }]}>
-            Gerenciamento de Tatames
-          </Text>
-        </View>
-
-        <TouchableOpacity
-          style={styles.btnAdd}
-          onPress={() => setModalVisible(true)}
-        >
-          <Ionicons name="add" size={30} color="#0F0F0F" />
-        </TouchableOpacity>
-      </View>
-
-      <FlatList
-        data={classGroups}
-        keyExtractor={(item: SimpleClassGroup) => item.id!.toString()}
-        renderItem={renderClassGroup}
-        contentContainerStyle={{ padding: 20, flexGrow: 1 }}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-        ListEmptyComponent={() => (
-          <View style={styles.emptyContainer}>
-            <Ionicons name="school-outline" size={50} color="#444" />
-            <Text style={[styles.emptyText, { fontSize: getFontSize(16) }]}>
-              Nenhuma turma criada
+            <Text
+              style={{
+                color:
+                  colors.textMuted,
+                fontSize:
+                  fs(13),
+                marginTop: 3,
+              }}
+            >
+              {
+                item.countPractitioners
+              }{" "}
+              alunos
             </Text>
           </View>
-        )}
+
+          {/* QR */}
+          <TouchableOpacity
+            style={
+              styles.actionBtn
+            }
+            onPress={() =>
+              openQr(item)
+            }
+          >
+            <Ionicons
+              name="qr-code-outline"
+              size={20}
+              color={
+                colors.accent
+              }
+            />
+          </TouchableOpacity>
+
+          {/* EDIT */}
+          <TouchableOpacity
+            style={
+              styles.actionBtn
+            }
+            onPress={() =>
+              openEdit(item)
+            }
+          >
+            <Ionicons
+              name="create-outline"
+              size={20}
+              color={
+                colors.accent
+              }
+            />
+          </TouchableOpacity>
+
+          {/* DELETE */}
+          <TouchableOpacity
+            style={
+              styles.actionBtn
+            }
+            onPress={() =>
+              openDelete(item)
+            }
+          >
+            <Ionicons
+              name="trash-outline"
+              size={20}
+              color={
+                colors.danger
+              }
+            />
+          </TouchableOpacity>
+        </View>
+      </TouchableOpacity>
+    );
+  }
+
+  return (
+    <View
+      style={[
+        styles.container,
+        {
+          backgroundColor:
+            colors.bg,
+        },
+      ]}
+    >
+      {/* HEADER */}
+      <View
+        style={
+          styles.header
+        }
+      >
+        <View>
+          <Text
+            style={[
+              styles.title,
+              {
+                color:
+                  colors.text,
+                fontSize:
+                  fs(28),
+              },
+            ]}
+          >
+            Minhas Turmas
+          </Text>
+
+          <Text
+            style={{
+              color:
+                colors.textMuted,
+              fontSize:
+                fs(13),
+              marginTop: 4,
+            }}
+          >
+            {
+              classGroups.length
+            }{" "}
+            turmas ativas
+          </Text>
+        </View>
+      </View>
+
+      {/* LISTA */}
+      <FlatList
+        data={classGroups}
+        keyExtractor={(
+          item,
+        ) =>
+          item.id!.toString()
+        }
+        renderItem={
+          renderItem
+        }
+        contentContainerStyle={{
+          padding: 20,
+          paddingBottom: 120,
+          flexGrow: 1,
+        }}
+        refreshControl={
+          <RefreshControl
+            refreshing={
+              refreshing
+            }
+            onRefresh={
+              onRefresh
+            }
+          />
+        }
       />
 
-      <Modal visible={modalVisible} transparent animationType="slide">
+      {/* FAB */}
+      <TouchableOpacity
+        style={[
+          styles.fab,
+          {
+            backgroundColor:
+              colors.accent,
+          },
+        ]}
+        onPress={openCreate}
+      >
+        <Ionicons
+          name="add"
+          size={28}
+          color={
+            colors.accentForeground
+          }
+        />
+      </TouchableOpacity>
+
+      {/* CREATE / EDIT */}
+      <Modal
+        transparent
+        visible={
+          modalVisible
+        }
+        animationType="slide"
+      >
         <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-          style={styles.modalOverlay}
+          behavior={
+            Platform.OS ===
+            "ios"
+              ? "padding"
+              : undefined
+          }
+          style={
+            styles.overlay
+          }
         >
-          <View style={styles.modalContent}>
-            <Text style={[styles.modalTitle, { fontSize: getFontSize(22) }]}>
-              {editingId ? "Editar Turma" : "Nova Turma"}
+          <View
+            style={[
+              styles.modal,
+              {
+                backgroundColor:
+                  colors.card,
+              },
+            ]}
+          >
+            <Text
+              style={{
+                color:
+                  colors.text,
+                fontSize:
+                  fs(22),
+                fontWeight:
+                  "800",
+                marginBottom: 18,
+              }}
+            >
+              {editingId
+                ? "Editar Turma"
+                : "Nova Turma"}
             </Text>
 
-            <Text style={[styles.label, { fontSize: getFontSize(12) }]}>
-              Nome da Turma
-            </Text>
             <TextInput
-              style={[styles.input, { fontSize: getFontSize(16) }]}
-              placeholder="Ex: JIU-JITSU NO-GI"
-              placeholderTextColor="#555"
-              value={newClassGroupName}
-              onChangeText={setNewClassGroupName}
+              placeholder="Nome da turma"
+              placeholderTextColor={
+                colors.textMuted
+              }
+              value={name}
+              onChangeText={
+                setName
+              }
+              style={[
+                styles.input,
+                {
+                  backgroundColor:
+                    colors.inputBg,
+                  color:
+                    colors.text,
+                },
+              ]}
             />
 
-            <View style={styles.modalButtons}>
+            <View
+              style={
+                styles.modalActions
+              }
+            >
               <TouchableOpacity
-                style={styles.btnCancelar}
-                onPress={fecharModal}
+                onPress={
+                  closeModal
+                }
               >
                 <Text
-                  style={[styles.cancelText, { fontSize: getFontSize(14) }]}
+                  style={{
+                    color:
+                      colors.textMuted,
+                    fontWeight:
+                      "700",
+                  }}
                 >
-                  CANCELAR
+                  Cancelar
                 </Text>
               </TouchableOpacity>
 
               <TouchableOpacity
-                onPress={() => {
-                  if(editingId) {
-                    updateClassGroup(editingId)
-                  }else {
-                    saveClassGroup();
-                  }
-                  
-                }}
-                style={[styles.btnSalvar, isDisabled && { opacity: 0.5 }]}
-                disabled={isDisabled}
+                style={[
+                  styles.saveBtn,
+                  {
+                    backgroundColor:
+                      colors.accent,
+                  },
+                ]}
+                onPress={save}
               >
                 <Text
-                  style={[styles.btnSalvarText, { fontSize: getFontSize(14) }]}
+                  style={{
+                    color:
+                      colors.accentForeground,
+                    fontWeight:
+                      "900",
+                  }}
                 >
-                  {editingId ? "ATUALIZAR" : "CRIAR TURMA"}
+                  Salvar
                 </Text>
               </TouchableOpacity>
             </View>
@@ -310,115 +550,350 @@ export default function ClassGroups() {
         </KeyboardAvoidingView>
       </Modal>
 
-      <AlertDialog open={openDeleteDialog} onOpenChange={setOpenDeleteDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Você tem certeza absoluta?</AlertDialogTitle>
+      {/* DELETE MODAL */}
+      <Modal
+        transparent
+        visible={
+          deleteVisible
+        }
+        animationType="fade"
+      >
+        <View
+          style={
+            styles.centerOverlay
+          }
+        >
+          <View
+            style={[
+              styles.confirmBox,
+              {
+                backgroundColor:
+                  colors.card,
+              },
+            ]}
+          >
+            <Ionicons
+              name="warning-outline"
+              size={38}
+              color={
+                colors.danger
+              }
+            />
 
-            <AlertDialogDescription>
-              Deseja remover {selectedClassGroup?.name}? Essa ação não poderá
-              ser desfeita em hipotese alguma.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-
-          <AlertDialogFooter>
-            <AlertDialogCancel>
-              <Text>Cancelar</Text>
-            </AlertDialogCancel>
-
-            <AlertDialogAction
-              className="bg-destructive"
-              onPress={async () => {
-                if (!selectedClassGroup?.id) return;
-
-                await handleRemoveTurma(selectedClassGroup.id);
-                setOpenDeleteDialog(false);
+            <Text
+              style={{
+                color:
+                  colors.text,
+                fontSize:
+                  fs(20),
+                fontWeight:
+                  "800",
+                marginTop: 12,
               }}
             >
-              <Text className="color-white">Excluir</Text>
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+              Excluir turma?
+            </Text>
+
+            <Text
+              style={{
+                color:
+                  colors.textMuted,
+                textAlign:
+                  "center",
+                marginTop: 10,
+              }}
+            >
+              Deseja remover{" "}
+              {
+                selectedDelete?.name
+              }
+              ?
+            </Text>
+
+            <View
+              style={{
+                flexDirection:
+                  "row",
+                gap: 10,
+                marginTop: 22,
+              }}
+            >
+              <TouchableOpacity
+                style={
+                  styles.cancelBtn
+                }
+                onPress={() =>
+                  setDeleteVisible(
+                    false,
+                  )
+                }
+              >
+                <Text
+                  style={{
+                    color:
+                      colors.textMuted,
+                    fontWeight:
+                      "700",
+                  }}
+                >
+                  Cancelar
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  styles.deleteBtn,
+                  {
+                    backgroundColor:
+                      colors.danger,
+                  },
+                ]}
+                onPress={() =>
+                  remove(
+                    selectedDelete?.id!,
+                  )
+                }
+              >
+                <Text
+                  style={{
+                    color:
+                      "#FFF",
+                    fontWeight:
+                      "900",
+                  }}
+                >
+                  Excluir
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* QR MODAL */}
+      <Modal
+        transparent
+        visible={
+          qrVisible
+        }
+        animationType="fade"
+      >
+        <View
+          style={
+            styles.centerOverlay
+          }
+        >
+          <View
+            style={[
+              styles.qrBox,
+              {
+                backgroundColor:
+                  colors.card,
+              },
+            ]}
+          >
+            <Text
+              style={{
+                color:
+                  colors.text,
+                fontSize:
+                  fs(20),
+                fontWeight:
+                  "800",
+                marginBottom: 18,
+              }}
+            >
+              {selectedQr?.name}
+            </Text>
+
+            <QRCode
+              value={
+                selectedQr?.qrToken ||
+                ""
+              }
+              size={230}
+            />
+
+            <TouchableOpacity
+              style={[
+                styles.closeQrBtn,
+                {
+                  backgroundColor:
+                    colors.accent,
+                },
+              ]}
+              onPress={() =>
+                setQrVisible(
+                  false,
+                )
+              }
+            >
+              <Text
+                style={{
+                  color:
+                    colors.accentForeground,
+                  fontWeight:
+                    "900",
+                  alignItems: 'center'
+                }}
+              >
+                Fechar
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#0F0F0F" },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: 25,
-    paddingTop: 60,
-    borderBottomWidth: 1,
-    borderBottomColor: "#1A1A1A",
-  },
-  headerTitle: { color: "#FFF", fontWeight: "900" },
-  headerSubtitle: { color: "#D4AF37", letterSpacing: 1 },
-  btnAdd: {
-    backgroundColor: "#D4AF37",
-    width: 48,
-    height: 48,
-    borderRadius: 14,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  card: {
-    backgroundColor: "#1A1A1A",
-    padding: 20,
-    borderRadius: 18,
-    marginBottom: 15,
-    flexDirection: "row",
-    alignItems: "center",
-    borderLeftWidth: 3,
-    borderLeftColor: "#D4AF37",
-  },
-  cardInfo: { flex: 1 },
-  cardHeader: { flexDirection: "row", alignItems: "center", marginBottom: 4 },
-  turmaNome: { color: "#FFF", fontWeight: "bold" },
-  turmaDetalhe: { color: "#666" },
-  btnIcon: { padding: 8, marginLeft: 5 }, // Estilo unificado para ícones de ação
-  emptyContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
-  emptyText: { color: "#888", marginTop: 10 },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.85)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  modalContent: {
-    backgroundColor: "#1A1A1A",
-    width: "85%",
-    padding: 25,
-    borderRadius: 25,
-    borderWidth: 1,
-    borderColor: "#333",
-  },
-  modalTitle: {
-    color: "#D4AF37",
-    fontWeight: "bold",
-    marginBottom: 20,
-    textAlign: "center",
-  },
-  label: { color: "#888", marginBottom: 5, marginLeft: 5 },
-  input: {
-    backgroundColor: "#252525",
-    color: "#FFF",
-    padding: 15,
-    borderRadius: 12,
-    marginBottom: 15,
-  },
-  modalButtons: { flexDirection: "row", alignItems: "center", marginTop: 10 },
-  btnCancelar: { flex: 1, alignItems: "center" },
-  cancelText: { color: "#888", fontWeight: "bold" },
-  btnSalvar: {
-    backgroundColor: "#D4AF37",
-    flex: 1.5,
-    paddingVertical: 15,
-    borderRadius: 12,
-    alignItems: "center",
-  },
-  btnSalvarText: { color: "#0F0F0F", fontWeight: "900" },
-});
+const styles =
+  StyleSheet.create({
+    container: {
+      flex: 1,
+    },
+
+    header: {
+      paddingHorizontal: 22,
+      paddingTop: 60,
+      paddingBottom: 10,
+    },
+
+    title: {
+      fontWeight: "900",
+    },
+
+    card: {
+      borderWidth: 1,
+      borderRadius: 22,
+      padding: 18,
+      marginBottom: 14,
+    },
+
+    row: {
+      flexDirection:
+        "row",
+      alignItems:
+        "center",
+    },
+
+    iconBox: {
+      width: 44,
+      height: 44,
+      borderRadius: 14,
+      justifyContent:
+        "center",
+      alignItems:
+        "center",
+      marginRight: 14,
+    },
+
+    name: {
+      fontWeight: "800",
+    },
+
+    actionBtn: {
+      padding: 8,
+      marginLeft: 4,
+    },
+
+    fab: {
+      position:
+        "absolute",
+      right: 24,
+      bottom: 28,
+      width: 62,
+      height: 62,
+      borderRadius: 999,
+      justifyContent:
+        "center",
+      alignItems:
+        "center",
+      elevation: 8,
+    },
+
+    overlay: {
+      flex: 1,
+      backgroundColor:
+        "rgba(0,0,0,0.6)",
+      justifyContent:
+        "flex-end",
+    },
+
+    centerOverlay: {
+      flex: 1,
+      backgroundColor:
+        "rgba(0,0,0,0.7)",
+      justifyContent:
+        "center",
+      alignItems:
+        "center",
+      padding: 20,
+    },
+
+    modal: {
+      borderTopLeftRadius: 28,
+      borderTopRightRadius: 28,
+      padding: 24,
+    },
+
+    input: {
+      height: 56,
+      borderRadius: 16,
+      paddingHorizontal: 16,
+      marginBottom: 18,
+    },
+
+    modalActions: {
+      flexDirection:
+        "row",
+      justifyContent:
+        "space-between",
+      alignItems:
+        "center",
+    },
+
+    saveBtn: {
+      paddingHorizontal: 22,
+      paddingVertical: 14,
+      borderRadius: 14,
+    },
+
+    confirmBox: {
+      width: "100%",
+      borderRadius: 24,
+      padding: 24,
+      alignItems:
+        "center",
+    },
+
+    cancelBtn: {
+      paddingHorizontal: 20,
+      paddingVertical: 14,
+      borderRadius: 14,
+      borderWidth: 1,
+      borderColor:
+        "#333",
+    },
+
+    deleteBtn: {
+      paddingHorizontal: 20,
+      paddingVertical: 14,
+      borderRadius: 14,
+    },
+
+    qrBox: {
+      width: "100%",
+      borderRadius: 24,
+      padding: 24,
+      alignItems:
+        "center",
+    },
+
+    closeQrBtn: {
+      marginTop: 22,
+      paddingHorizontal: 24,
+      paddingVertical: 14,
+      borderRadius: 14,
+    },
+  });

@@ -1,76 +1,50 @@
 import React, { useContext } from "react";
-
 import "./global.css";
 
 import { NavigationContainer } from "@react-navigation/native";
-import Toast, { BaseToast, ErrorToast } from 'react-native-toast-message'
-
+import Toast, { BaseToast, ErrorToast } from "react-native-toast-message";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-
 import { Ionicons } from "@expo/vector-icons";
 
 // CONTEXTS
 import { AuthProvider, AuthContext } from "./src/context/AuthContext";
-
-import { AppProvider } from "./src/context/AppContext";
+import { ThemeProvider } from "./src/context/ThemeContext";
 
 // SCREENS
 import Login from "./src/screens/Login";
 import Cadastro from "./src/screens/SignUp";
-
 import ClassGroups from "./src/screens/ClassGroups";
 import PerfilProfessor from "./src/screens/Profile";
 import DetalheTurma from "./src/screens/ClassGroupDetail";
 import FrequenciaAluno from "./src/screens/Frequencia";
-
 import JoinClassGroup from "./src/screens/CommonClassGroupsScreen";
 import PractitionerClassGroups from "./src/screens/PractitionerClassGroupsScreen";
+import PractitionerClassGroupDetail from "./src/screens/PractitionerClassGroupDetail";
+import AlbumScreen from "./src/screens/AlbumScreen";
 
 import { PortalHost } from "@rn-primitives/portal";
 import QrScanner from "./src/screens/QrScannerScreen";
 
 const Stack = createNativeStackNavigator();
-
 const Tab = createBottomTabNavigator();
 
 const toastConfig = {
   success: (props: any) => (
     <BaseToast
       {...props}
-      style={{
-        borderLeftColor: "#87ff06",
-        backgroundColor: "#1A1A1A",
-      }}
-      contentContainerStyle={{
-        paddingHorizontal: 15,
-      }}
-      text1Style={{
-        color: "#FFFFFF",
-        fontSize: 16,
-        fontWeight: "bold",
-      }}
-      text2Style={{
-        color: "#CCCCCC",
-        fontSize: 13,
-      }}
+      style={{ borderLeftColor: "#87ff06", backgroundColor: "#1A1A1A" }}
+      contentContainerStyle={{ paddingHorizontal: 15 }}
+      text1Style={{ color: "#FFFFFF", fontSize: 16, fontWeight: "bold" }}
+      text2Style={{ color: "#CCCCCC", fontSize: 13 }}
     />
   ),
-
   error: (props: any) => (
     <ErrorToast
       {...props}
-      style={{
-        borderLeftColor: "#FF4444",
-        backgroundColor: "#1A1A1A",
-      }}
-      text1Style={{
-        color: "#FFF",
-      }}
-      text2Style={{
-        color: "#CCC",
-      }}
+      style={{ borderLeftColor: "#FF4444", backgroundColor: "#1A1A1A" }}
+      text1Style={{ color: "#FFF" }}
+      text2Style={{ color: "#CCC" }}
     />
   ),
 };
@@ -98,7 +72,15 @@ function MasterTabs() {
           ),
         }}
       />
-
+      <Tab.Screen
+        name="Album"
+        component={AlbumScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="images" size={size} color={color} />
+          ),
+        }}
+      />
       <Tab.Screen
         name="Perfil"
         component={PerfilProfessor}
@@ -135,7 +117,6 @@ function PractitionerTabs() {
           ),
         }}
       />
-
       <Tab.Screen
         name="Entrar"
         component={JoinClassGroup}
@@ -145,7 +126,15 @@ function PractitionerTabs() {
           ),
         }}
       />
-
+      <Tab.Screen
+        name="Album"
+        component={AlbumScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="images" size={size} color={color} />
+          ),
+        }}
+      />
       <Tab.Screen
         name="Perfil"
         component={PerfilProfessor}
@@ -168,11 +157,7 @@ function AppRoutes() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator
-        screenOptions={{
-          headerShown: false,
-        }}
-      >
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
         {!user ? (
           <>
             <Stack.Screen name="SignIn" component={Login} />
@@ -184,14 +169,15 @@ function AppRoutes() {
               name="Main"
               component={isMaster ? MasterTabs : PractitionerTabs}
             />
-
             <Stack.Screen name="DetalheTurma" component={DetalheTurma} />
-
+            <Stack.Screen
+              name="PractitionerClassGroupDetail"
+              component={PractitionerClassGroupDetail}
+            />
             <Stack.Screen name="FrequenciaAluno" component={FrequenciaAluno} />
           </>
         )}
-
-        {/* 🔥 SEMPRE FORA DO CONDICIONAL */}
+        {/* Sempre disponível */}
         <Stack.Screen name="QrScanner" component={QrScanner} />
       </Stack.Navigator>
     </NavigationContainer>
@@ -201,11 +187,11 @@ function AppRoutes() {
 export default function App() {
   return (
     <AuthProvider>
-      <AppProvider>
+      <ThemeProvider>
         <AppRoutes />
         <PortalHost />
-        <Toast config={toastConfig}/>
-      </AppProvider>
+        <Toast config={toastConfig} />
+      </ThemeProvider>
     </AuthProvider>
   );
 }

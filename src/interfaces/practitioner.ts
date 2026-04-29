@@ -6,7 +6,6 @@ export interface Attendances {
 
 export interface Practitioner {
   id?: number;
-  name: string;
-  phone: string;
+  practitionerName: string;
   attendances: Attendances[];
 }
