@@ -1,60 +1,58 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   View,
   Text,
   TextInput,
   StyleSheet,
   TouchableOpacity,
-  Alert
-} from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+  Alert,
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import api from "../services/api";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useNavigation } from "@react-navigation/native";
 
-export default function Cadastro({ navigation }) {
-  const [nome, setNome] = useState('');
-  const [email, setEmail] = useState('');
-  const [senha, setSenha] = useState('');
-  const [confirmarSenha, setConfirmarSenha] = useState('');
+export type RootStackParamList = {
+  SignIn: undefined;
+};
 
-  const handleCadastro = async () => {
-    if (!nome || !email || !senha || !confirmarSenha) {
-      Alert.alert('Erro', 'Preencha todos os campos');
-      return;
-    }
+type NavigationProps =
+  NativeStackNavigationProp<
+    RootStackParamList
+  >;
 
-    if (senha !== confirmarSenha) {
-      Alert.alert('Erro', 'As senhas não coincidem');
-      return;
-    }
+export default function Cadastro() {
+  const [name, setName] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [confirmPassword, setConfirmPassword] = useState<string>("");
 
-    if (senha.length < 6) {
-      Alert.alert('Erro', 'A senha deve ter pelo menos 6 caracteres');
-      return;
-    }
+  const navigation = useNavigation<NavigationProps>();
 
+  const handleRegister = async () => {
     try {
-      const response = await fetch('http://10.135.156.24/api/auth/sign-up', 
+      const response = await api.post(
+        "/auth/sign-up",
         {
-          method: 'POST',
+          name,
+          email,
+          password,
+        },
+        {
           headers: {
-            'Content-type': 'application/json',
+            "Content-type": "application/json",
           },
-          body: JSON.stringify({
-            name: nome,
-            email: email,
-            password: senha
-          })
-        }
-      )
-    }catch(err) {
-        console.log(err.message());
-    }
+        },
+      );
 
-    
+      navigation.navigate("SignIn");
+    } catch (err: any) {
+      console.log(err.response.data.message);
+    }
   };
 
   return (
     <View style={styles.container}>
-
       {/* ÍCONE */}
       <Ionicons name="person-add" size={60} color="#D4AF37" />
 
@@ -69,8 +67,8 @@ export default function Cadastro({ navigation }) {
           placeholder="Nome"
           placeholderTextColor="#777"
           style={styles.input}
-          value={nome}
-          onChangeText={setNome}
+          value={name}
+          onChangeText={setName}
         />
       </View>
 
@@ -94,8 +92,8 @@ export default function Cadastro({ navigation }) {
           placeholderTextColor="#777"
           secureTextEntry
           style={styles.input}
-          value={senha}
-          onChangeText={setSenha}
+          value={password}
+          onChangeText={setPassword}
         />
       </View>
 
@@ -107,13 +105,13 @@ export default function Cadastro({ navigation }) {
           placeholderTextColor="#777"
           secureTextEntry
           style={styles.input}
-          value={confirmarSenha}
-          onChangeText={setConfirmarSenha}
+          value={confirmPassword}
+          onChangeText={setConfirmPassword}
         />
       </View>
 
       {/* BOTÃO */}
-      <TouchableOpacity style={styles.button} onPress={handleCadastro}>
+      <TouchableOpacity style={styles.button} onPress={handleRegister}>
         <Text style={styles.buttonText}>Cadastrar</Text>
       </TouchableOpacity>
 
@@ -123,7 +121,6 @@ export default function Cadastro({ navigation }) {
           Já tem conta? <Text style={styles.linkBold}>Entrar</Text>
         </Text>
       </TouchableOpacity>
-
     </View>
   );
 }
@@ -131,28 +128,28 @@ export default function Cadastro({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0F0F0F',
-    justifyContent: 'center',
+    backgroundColor: "#0F0F0F",
+    justifyContent: "center",
     padding: 25,
   },
 
   title: {
-    color: '#FFF',
+    color: "#FFF",
     fontSize: 30,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginTop: 15,
   },
 
   subtitle: {
-    color: '#AAA',
+    color: "#AAA",
     fontSize: 14,
     marginBottom: 30,
   },
 
   inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#1A1A1A',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#1A1A1A",
     borderRadius: 10,
     paddingHorizontal: 15,
     marginBottom: 15,
@@ -160,34 +157,34 @@ const styles = StyleSheet.create({
 
   input: {
     flex: 1,
-    color: '#FFF',
+    color: "#FFF",
     paddingVertical: 12,
     marginLeft: 10,
   },
 
   button: {
-    backgroundColor: '#D4AF37',
+    backgroundColor: "#D4AF37",
     padding: 15,
     borderRadius: 10,
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: 10,
     elevation: 5,
   },
 
   buttonText: {
-    color: '#000',
-    fontWeight: 'bold',
+    color: "#000",
+    fontWeight: "bold",
     fontSize: 16,
   },
 
   link: {
-    color: '#AAA',
-    textAlign: 'center',
+    color: "#AAA",
+    textAlign: "center",
     marginTop: 20,
   },
 
   linkBold: {
-    color: '#D4AF37',
-    fontWeight: 'bold',
+    color: "#D4AF37",
+    fontWeight: "bold",
   },
 });

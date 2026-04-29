@@ -1,0 +1,169 @@
+import React, { useContext } from "react";
+
+import "./global.css";
+
+import { NavigationContainer } from "@react-navigation/native";
+
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+
+import { Ionicons } from "@expo/vector-icons";
+
+// CONTEXTS
+import { AuthProvider, AuthContext } from "./src/context/AuthContext";
+
+import { AppProvider } from "./src/context/AppContext";
+
+// SCREENS
+import Login from "./src/screens/Login";
+import Cadastro from "./src/screens/SignUp";
+
+import ClassGroups from "./src/screens/ClassGroups";
+import PerfilProfessor from "./src/screens/Profile";
+import DetalheTurma from "./src/screens/DetalheTurma";
+import FrequenciaAluno from "./src/screens/Frequencia";
+
+import JoinClassGroup from "./src/screens/CommonClassGroupsScreen";
+import PractitionerClassGroups from "./src/screens/PractitionerClassGroupsScreen";
+
+import { PortalHost } from "@rn-primitives/portal";
+import QrScanner from "./src/screens/QrScannerScreen";
+
+const Stack = createNativeStackNavigator();
+
+const Tab = createBottomTabNavigator();
+
+function MasterTabs() {
+  return (
+    <Tab.Navigator
+      screenOptions={{
+        headerShown: false,
+        tabBarStyle: {
+          backgroundColor: "#1A1A1A",
+          height: 60,
+          borderTopWidth: 0,
+        },
+        tabBarActiveTintColor: "#D4AF37",
+        tabBarInactiveTintColor: "#666",
+      }}
+    >
+      <Tab.Screen
+        name="Turmas"
+        component={ClassGroups}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="people" size={size} color={color} />
+          ),
+        }}
+      />
+
+      <Tab.Screen
+        name="Perfil"
+        component={PerfilProfessor}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="person" size={size} color={color} />
+          ),
+        }}
+      />
+    </Tab.Navigator>
+  );
+}
+
+function PractitionerTabs() {
+  return (
+    <Tab.Navigator
+      screenOptions={{
+        headerShown: false,
+        tabBarStyle: {
+          backgroundColor: "#1A1A1A",
+          height: 60,
+          borderTopWidth: 0,
+        },
+        tabBarActiveTintColor: "#D4AF37",
+        tabBarInactiveTintColor: "#666",
+      }}
+    >
+      <Tab.Screen
+        name="Turmas"
+        component={PractitionerClassGroups}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="people" size={size} color={color} />
+          ),
+        }}
+      />
+
+      <Tab.Screen
+        name="Entrar"
+        component={JoinClassGroup}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="qr-code" size={size} color={color} />
+          ),
+        }}
+      />
+
+      <Tab.Screen
+        name="Perfil"
+        component={PerfilProfessor}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="person" size={size} color={color} />
+          ),
+        }}
+      />
+    </Tab.Navigator>
+  );
+}
+
+function AppRoutes() {
+  const { user, loading } = useContext(AuthContext);
+
+  if (loading) return null;
+
+  const isMaster = user?.role === "MASTER";
+
+  return (
+    <NavigationContainer>
+      <Stack.Navigator
+        screenOptions={{
+          headerShown: false,
+        }}
+      >
+        {!user ? (
+          <>
+            <Stack.Screen name="SignIn" component={Login} />
+            <Stack.Screen name="SignUp" component={Cadastro} />
+          </>
+        ) : (
+          <>
+            <Stack.Screen
+              name="Main"
+              component={isMaster ? MasterTabs : PractitionerTabs}
+            />
+
+            <Stack.Screen name="DetalheTurma" component={DetalheTurma} />
+
+            <Stack.Screen name="FrequenciaAluno" component={FrequenciaAluno} />
+          </>
+        )}
+
+        {/* 🔥 SEMPRE FORA DO CONDICIONAL */}
+        <Stack.Screen name="QrScanner" component={QrScanner} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <AppProvider>
+        <AppRoutes />
+        <PortalHost />
+      </AppProvider>
+    </AuthProvider>
+  );
+}

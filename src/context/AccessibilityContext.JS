@@ -1,5 +1,5 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { createContext, useState, useEffect, useContext } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // Cria o contexto
 export const AccessibilityContext = createContext();
@@ -12,10 +12,12 @@ export function AccessibilityProvider({ children }) {
   // Carrega as preferências salvas ao abrir o app
   useEffect(() => {
     const loadSettings = async () => {
-      const savedFonte = await AsyncStorage.getItem('@acessibilidade_fonte');
-      const savedContraste = await AsyncStorage.getItem('@acessibilidade_contraste');
-      if (savedFonte === 'true') setFonteMaior(true);
-      if (savedContraste === 'true') setAltoContraste(true);
+      const savedFonte = await AsyncStorage.getItem("@acessibilidade_fonte");
+      const savedContraste = await AsyncStorage.getItem(
+        "@acessibilidade_contraste",
+      );
+      if (savedFonte === "true") setFonteMaior(true);
+      if (savedContraste === "true") setAltoContraste(true);
     };
     loadSettings();
   }, []);
@@ -24,13 +26,13 @@ export function AccessibilityProvider({ children }) {
   const toggleFonteMaior = async () => {
     const newValue = !fonteMaior;
     setFonteMaior(newValue);
-    await AsyncStorage.setItem('@acessibilidade_fonte', String(newValue));
+    await AsyncStorage.setItem("@acessibilidade_fonte", String(newValue));
   };
 
   const toggleAltoContraste = async () => {
     const newValue = !altoContraste;
     setAltoContraste(newValue);
-    await AsyncStorage.setItem('@acessibilidade_contraste', String(newValue));
+    await AsyncStorage.setItem("@acessibilidade_contraste", String(newValue));
   };
 
   // Função utilitária que será usada nas telas para calcular o tamanho da fonte
@@ -40,14 +42,20 @@ export function AccessibilityProvider({ children }) {
 
   // Função utilitária para cores de texto secundário (cinza vs branco)
   const getTextColor = (defaultColor) => {
-    return altoContraste ? '#FFFFFF' : defaultColor; // Força branco se alto contraste
+    return altoContraste ? "#FFFFFF" : defaultColor; // Força branco se alto contraste
   };
 
   return (
-    <AccessibilityContext.Provider value={{ 
-      fonteMaior, toggleFonteMaior, getFontSize, 
-      altoContraste, toggleAltoContraste, getTextColor 
-    }}>
+    <AccessibilityContext.Provider
+      value={{
+        fonteMaior,
+        toggleFonteMaior,
+        getFontSize,
+        altoContraste,
+        toggleAltoContraste,
+        getTextColor,
+      }}
+    >
       {children}
     </AccessibilityContext.Provider>
   );
