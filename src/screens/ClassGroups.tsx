@@ -36,6 +36,7 @@ export default function ClassGroups() {
   const {
     colors,
     fs,
+    t,
   } = useContext(ThemeContext);
 
   const [classGroups, setClassGroups] =
@@ -144,8 +145,7 @@ export default function ClassGroups() {
 
         Toast.show({
           type: "success",
-          text1:
-            "Turma atualizada",
+          text1: t.classUpdated,
         });
       } else {
         await api.post(
@@ -157,8 +157,7 @@ export default function ClassGroups() {
 
         Toast.show({
           type: "success",
-          text1:
-            "Turma criada",
+          text1: t.classCreated,
         });
       }
 
@@ -167,8 +166,7 @@ export default function ClassGroups() {
     } catch {
       Toast.show({
         type: "error",
-        text1:
-          "Erro ao salvar",
+        text1: t.saveClassError,
       });
     }
   }
@@ -181,8 +179,7 @@ export default function ClassGroups() {
 
       Toast.show({
         type: "success",
-        text1:
-          "Turma removida",
+        text1: t.classRemoved,
       });
 
       setDeleteVisible(false);
@@ -190,8 +187,7 @@ export default function ClassGroups() {
     } catch {
       Toast.show({
         type: "error",
-        text1:
-          "Erro ao remover",
+        text1: t.removeClassError,
       });
     }
   }
@@ -280,7 +276,7 @@ export default function ClassGroups() {
               {
                 item.countPractitioners
               }{" "}
-              alunos
+              {t.studentsCountSuffix}
             </Text>
           </View>
 
@@ -370,7 +366,7 @@ export default function ClassGroups() {
               },
             ]}
           >
-            Minhas Turmas
+            {t.myClasses}
           </Text>
 
           <Text
@@ -382,10 +378,7 @@ export default function ClassGroups() {
               marginTop: 4,
             }}
           >
-            {
-              classGroups.length
-            }{" "}
-            turmas ativas
+            {classGroups.length} {t.activeClassesCount}
           </Text>
         </View>
       </View>
@@ -477,13 +470,11 @@ export default function ClassGroups() {
                 marginBottom: 18,
               }}
             >
-              {editingId
-                ? "Editar Turma"
-                : "Nova Turma"}
+              {editingId ? t.editClass : t.newClass}
             </Text>
 
             <TextInput
-              placeholder="Nome da turma"
+              placeholder={t.classNamePlaceholder}
               placeholderTextColor={
                 colors.textMuted
               }
@@ -520,7 +511,7 @@ export default function ClassGroups() {
                       "700",
                   }}
                 >
-                  Cancelar
+                  {t.cancel}
                 </Text>
               </TouchableOpacity>
 
@@ -542,7 +533,7 @@ export default function ClassGroups() {
                       "900",
                   }}
                 >
-                  Salvar
+                  {t.save}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -591,7 +582,7 @@ export default function ClassGroups() {
                 marginTop: 12,
               }}
             >
-              Excluir turma?
+              {t.deleteClassQuestion}
             </Text>
 
             <Text
@@ -603,11 +594,10 @@ export default function ClassGroups() {
                 marginTop: 10,
               }}
             >
-              Deseja remover{" "}
-              {
-                selectedDelete?.name
-              }
-              ?
+              {t.deleteClassRemoveNamed.replace(
+                "{name}",
+                selectedDelete?.name ?? "",
+              )}
             </Text>
 
             <View
@@ -636,7 +626,7 @@ export default function ClassGroups() {
                       "700",
                   }}
                 >
-                  Cancelar
+                  {t.cancel}
                 </Text>
               </TouchableOpacity>
 
@@ -657,12 +647,12 @@ export default function ClassGroups() {
                 <Text
                   style={{
                     color:
-                      "#FFF",
+                      colors.text,
                     fontWeight:
                       "900",
                   }}
                 >
-                  Excluir
+                  {t.delete}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -737,7 +727,7 @@ export default function ClassGroups() {
                   alignItems: 'center'
                 }}
               >
-                Fechar
+                {t.close}
               </Text>
             </TouchableOpacity>
           </View>

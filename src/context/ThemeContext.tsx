@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+import { TRANSLATIONS } from "../i18n/translations";
+
 // ─── TIPOS ────────────────────────────────────────────────────────────────────
 
 export type ColorScheme = "dark" | "light";
@@ -74,73 +76,6 @@ const LIGHT: ThemeColors = {
   success: "#388E3C",
   warning: "#F57F17",
   inputBg: "#E8E8E8",
-};
-
-// ─── TRADUÇÕES ────────────────────────────────────────────────────────────────
-
-const TRANSLATIONS: Record<Language, Record<string, string>> = {
-  "pt-BR": {
-    login: "Entrar",
-    logout: "Sair da Conta",
-    theme: "Tema",
-    language: "Idioma",
-    darkTheme: "Tema Escuro",
-    portuguese: "Português",
-    english: "English",
-    largeFonts: "Fonte Ampliada",
-    highContrast: "Alto Contraste",
-    accessibility: "ACESSIBILIDADE",
-    preferences: "PREFERÊNCIAS",
-    editProfile: "Editar Perfil",
-    myClasses: "Minhas Turmas",
-    myClass: "Minha Turma",
-    students: "Alunos",
-    noClass: "Você não está em nenhuma turma",
-    frequency: "Frequência",
-    present: "PRESENTE",
-    absent: "FALTA",
-    cancel: "CANCELAR",
-    confirm: "CONFIRMAR",
-    save: "SALVAR",
-    delete: "Excluir",
-    areYouSure: "Você tem certeza absoluta?",
-    master: "Mestre",
-    practitioner: "Praticante",
-    album: "Álbum",
-    addPhoto: "Adicionar Foto",
-    noPhotos: "Nenhuma foto no álbum ainda",
-  },
-  "en-US": {
-    login: "Login",
-    logout: "Logout",
-    theme: "Theme",
-    language: "Language",
-    darkTheme: "Dark Theme",
-    portuguese: "Português",
-    english: "English",
-    largeFonts: "Large Fonts",
-    highContrast: "High Contrast",
-    accessibility: "ACCESSIBILITY",
-    preferences: "PREFERENCES",
-    editProfile: "Edit Profile",
-    myClasses: "My Classes",
-    myClass: "My Class",
-    students: "Students",
-    noClass: "You are not in any class",
-    frequency: "Frequency",
-    present: "PRESENT",
-    absent: "ABSENT",
-    cancel: "CANCEL",
-    confirm: "CONFIRM",
-    save: "SAVE",
-    delete: "Delete",
-    areYouSure: "Are you absolutely sure?",
-    master: "Master",
-    practitioner: "Practitioner",
-    album: "Album",
-    addPhoto: "Add Photo",
-    noPhotos: "No photos in the album yet",
-  },
 };
 
 // ─── STORAGE KEYS ─────────────────────────────────────────────────────────────

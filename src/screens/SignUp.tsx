@@ -10,11 +10,16 @@ import {
   Platform,
   ActivityIndicator,
   Animated,
+  ScrollView,
+  Dimensions,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import api from "../services/api";
 import { useNavigation } from "@react-navigation/native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+
+import { useTheme } from "../context/ThemeContext";
 
 export type RootStackParamList = {
   SignIn: undefined;
@@ -22,13 +27,24 @@ export type RootStackParamList = {
 
 type NavigationProps = NativeStackNavigationProp<RootStackParamList>;
 
+const { height: windowHeight } = Dimensions.get("window");
+
 function Input({ icon, ...props }: any) {
+  const { colors, fs } = useTheme();
   return (
-    <View style={styles.inputWrap}>
-      <Ionicons name={icon} size={20} color="#D4AF37" />
+    <View
+      style={[
+        styles.inputWrap,
+        {
+          backgroundColor: colors.inputBg,
+          borderColor: colors.cardBorder,
+        },
+      ]}
+    >
+      <Ionicons name={icon} size={20} color={colors.accent} />
       <TextInput
-        placeholderTextColor="#666"
-        style={styles.input}
+        placeholderTextColor={colors.textMuted}
+        style={[styles.input, { color: colors.text, fontSize: fs(15) }]}
         {...props}
       />
     </View>
@@ -37,6 +53,8 @@ function Input({ icon, ...props }: any) {
 
 export default function Cadastro() {
   const navigation = useNavigation<NavigationProps>();
+  const insets = useSafeAreaInsets();
+  const { colors, fs, t, isDark } = useTheme();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -60,12 +78,12 @@ export default function Cadastro() {
       setError("");
 
       if (!name || !email || !password || !confirmPassword) {
-        setError("Preencha todos os campos.");
+        setError(t.fillAllFields);
         return;
       }
 
       if (password !== confirmPassword) {
-        setError("As senhas não coincidem.");
+        setError(t.passwordsMismatch);
         return;
       }
 
@@ -79,131 +97,134 @@ export default function Cadastro() {
 
       navigation.navigate("SignIn");
     } catch (err: any) {
-      setError(
-        err?.response?.data?.message ??
-          "Não foi possível criar a conta."
-      );
+      setError(err?.response?.data?.message ?? t.registerFailed);
     } finally {
       setLoading(false);
     }
   }
 
+  const accentSoft = isDark ? `${colors.accent}18` : `${colors.accent}28`;
+
   return (
-    <View style={styles.root}>
-      <View style={styles.glow1} />
-      <View style={styles.glow2} />
+    <View style={[styles.root, { backgroundColor: colors.bg }]}>
+      <View style={[styles.glow1, { backgroundColor: accentSoft }]} />
+      <View style={[styles.glow2, { backgroundColor: accentSoft }]} />
 
       <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-        style={styles.container}
+        style={styles.kav}
+        behavior="padding"
+        keyboardVerticalOffset={Platform.OS === "ios" ? insets.top : 0}
       >
-        {/* HERO */}
-        <View style={styles.hero}>
-          <View style={styles.logoOuter}>
-            <View style={styles.logoInner}>
-              <Ionicons
-                name="person-add"
-                size={38}
-                color="#D4AF37"
-              />
+        <ScrollView
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+          bounces={false}
+          contentContainerStyle={[
+            styles.scrollContent,
+            {
+              minHeight: windowHeight - insets.top - insets.bottom,
+              paddingHorizontal: 24,
+            },
+          ]}
+        >
+          <View style={styles.hero}>
+            <View style={[styles.logoOuter, { borderColor: `${colors.accent}66` }]}>
+              <View style={[styles.logoInner, { backgroundColor: colors.bgSecondary }]}>
+                <Ionicons name="person-add" size={38} color={colors.accent} />
+              </View>
             </View>
+
+            <Text style={[styles.brand, { color: colors.text, fontSize: fs(30) }]}>
+              COACH<Text style={{ color: colors.accent }}>PAD</Text>
+            </Text>
+
+            <Text style={[styles.slogan, { color: colors.textMuted, fontSize: fs(13) }]}>
+              {t.signUpHeroSlogan}
+            </Text>
           </View>
 
-          <Text style={styles.brand}>
-            COACH<Text style={{ color: "#D4AF37" }}>PAD</Text>
-          </Text>
-
-          <Text style={styles.slogan}>
-            Crie sua conta e entre no coachpad
-          </Text>
-        </View>
-
-        {/* CARD */}
-        <View style={styles.card}>
-          <Text style={styles.title}>Criar Conta</Text>
-          <Text style={styles.subtitle}>
-            Comece sua jornada agora
-          </Text>
-
-          <View style={{ height: 24 }} />
-
-          <Input
-            icon="person-outline"
-            placeholder="Seu nome"
-            value={name}
-            onChangeText={setName}
-          />
-
-          <Input
-            icon="mail-outline"
-            placeholder="Seu email"
-            value={email}
-            onChangeText={setEmail}
-            autoCapitalize="none"
-          />
-
-          <Input
-            icon="lock-closed-outline"
-            placeholder="Senha"
-            secureTextEntry
-            value={password}
-            onChangeText={setPassword}
-          />
-
-          <Input
-            icon="shield-checkmark-outline"
-            placeholder="Confirmar senha"
-            secureTextEntry
-            value={confirmPassword}
-            onChangeText={setConfirmPassword}
-          />
-
-          {error ? (
-            <Text style={styles.error}>{error}</Text>
-          ) : null}
-
-          <Animated.View
-            style={{
-              transform: [{ scale }],
-              marginTop: 10,
-            }}
+          <View
+            style={[
+              styles.card,
+              {
+                backgroundColor: colors.card,
+                borderColor: colors.cardBorder,
+                shadowColor: colors.accent,
+              },
+            ]}
           >
-            <Pressable
-              style={styles.button}
-              onPressIn={() => animate(0.97)}
-              onPressOut={() => animate(1)}
-              onPress={handleRegister}
-            >
-              {loading ? (
-                <ActivityIndicator color="#000" />
-              ) : (
-                <>
-                  <Text style={styles.buttonText}>
-                    CADASTRAR
-                  </Text>
-
-                  <Ionicons
-                    name="arrow-forward"
-                    size={18}
-                    color="#000"
-                  />
-                </>
-              )}
-            </Pressable>
-          </Animated.View>
-
-          <TouchableOpacity
-            style={styles.linkWrap}
-            onPress={() => navigation.goBack()}
-          >
-            <Text style={styles.link}>
-              Já possui conta?{" "}
-              <Text style={styles.linkAccent}>
-                Entrar
-              </Text>
+            <Text style={[styles.title, { color: colors.text, fontSize: fs(24) }]}>
+              {t.createAccountTitle}
             </Text>
-          </TouchableOpacity>
-        </View>
+            <Text style={[styles.subtitle, { color: colors.textMuted, fontSize: fs(13) }]}>
+              {t.createAccountSubtitle}
+            </Text>
+
+            <View style={{ height: 24 }} />
+
+            <Input
+              icon="person-outline"
+              placeholder={t.namePlaceholder}
+              value={name}
+              onChangeText={setName}
+            />
+
+            <Input
+              icon="mail-outline"
+              placeholder={t.emailPlaceholder}
+              value={email}
+              onChangeText={setEmail}
+              autoCapitalize="none"
+            />
+
+            <Input
+              icon="lock-closed-outline"
+              placeholder={t.passwordShort}
+              secureTextEntry
+              value={password}
+              onChangeText={setPassword}
+            />
+
+            <Input
+              icon="shield-checkmark-outline"
+              placeholder={t.confirmPasswordPlaceholder}
+              secureTextEntry
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+            />
+
+            {error ? (
+              <Text style={[styles.error, { color: colors.danger }]}>{error}</Text>
+            ) : null}
+
+            <Animated.View style={{ transform: [{ scale }], marginTop: 10 }}>
+              <Pressable
+                style={[styles.button, { backgroundColor: colors.accent }]}
+                onPressIn={() => animate(0.97)}
+                onPressOut={() => animate(1)}
+                onPress={handleRegister}
+              >
+                {loading ? (
+                  <ActivityIndicator color={colors.accentForeground} />
+                ) : (
+                  <>
+                    <Text style={[styles.buttonText, { color: colors.accentForeground }]}>
+                      {t.registerCta}
+                    </Text>
+                    <Ionicons name="arrow-forward" size={18} color={colors.accentForeground} />
+                  </>
+                )}
+              </Pressable>
+            </Animated.View>
+
+            <TouchableOpacity style={styles.linkWrap} onPress={() => navigation.goBack()}>
+              <Text style={[styles.link, { color: colors.textMuted }]}>
+                {t.haveAccountPrompt}{" "}
+                <Text style={[styles.linkAccent, { color: colors.accent }]}>{t.signInLink}</Text>
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
       </KeyboardAvoidingView>
     </View>
   );
@@ -212,148 +233,109 @@ export default function Cadastro() {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: "#080808",
   },
-
   glow1: {
     position: "absolute",
     width: 280,
     height: 280,
     borderRadius: 999,
-    backgroundColor: "#D4AF3710",
     top: -60,
     right: -70,
   },
-
   glow2: {
     position: "absolute",
     width: 240,
     height: 240,
     borderRadius: 999,
-    backgroundColor: "#D4AF3708",
     bottom: -50,
     left: -60,
   },
-
-  container: {
+  kav: {
     flex: 1,
-    justifyContent: "center",
-    paddingHorizontal: 24,
   },
-
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: "center",
+    paddingTop: 8,
+    paddingBottom: 32,
+  },
   hero: {
     alignItems: "center",
     marginBottom: 34,
   },
-
   logoOuter: {
     width: 100,
     height: 100,
     borderRadius: 999,
     borderWidth: 1,
-    borderColor: "#D4AF3740",
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 16,
   },
-
   logoInner: {
     width: 76,
     height: 76,
     borderRadius: 999,
-    backgroundColor: "#141414",
     justifyContent: "center",
     alignItems: "center",
   },
-
   brand: {
-    color: "#FFF",
-    fontSize: 30,
     fontWeight: "900",
     letterSpacing: 4,
   },
-
   slogan: {
-    color: "#777",
     marginTop: 8,
     letterSpacing: 1,
   },
-
   card: {
-    backgroundColor: "#111",
     borderRadius: 28,
     padding: 28,
     borderWidth: 1,
-    borderColor: "#222",
-    shadowColor: "#D4AF37",
     shadowOpacity: 0.1,
     shadowRadius: 18,
     elevation: 10,
   },
-
   title: {
-    color: "#FFF",
-    fontSize: 24,
     fontWeight: "800",
   },
-
   subtitle: {
-    color: "#777",
     marginTop: 6,
   },
-
   inputWrap: {
     height: 58,
     borderRadius: 16,
-    backgroundColor: "#1A1A1A",
     borderWidth: 1,
-    borderColor: "#2A2A2A",
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 16,
     marginBottom: 14,
   },
-
   input: {
     flex: 1,
-    color: "#FFF",
     marginLeft: 12,
-    fontSize: 15,
   },
-
   error: {
-    color: "#FF4444",
     marginTop: 2,
     marginBottom: 8,
   },
-
   button: {
     height: 58,
     borderRadius: 16,
-    backgroundColor: "#D4AF37",
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
     gap: 8,
   },
-
   buttonText: {
-    color: "#000",
     fontWeight: "900",
     letterSpacing: 2,
   },
-
   linkWrap: {
     marginTop: 22,
     alignItems: "center",
   },
-
-  link: {
-    color: "#777",
-  },
-
+  link: {},
   linkAccent: {
-    color: "#D4AF37",
     fontWeight: "700",
   },
 });

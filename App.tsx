@@ -22,8 +22,12 @@ import JoinClassGroup from "./src/screens/CommonClassGroupsScreen";
 import PractitionerClassGroups from "./src/screens/PractitionerClassGroupsScreen";
 import PractitionerClassGroupDetail from "./src/screens/PractitionerClassGroupDetail";
 import AlbumScreen from "./src/screens/AlbumScreen";
+import MasterAlbumsScreen from "./src/screens/MasterAlbumsScreen";
+import AlbumDetailScreen from "./src/screens/AlbumDetailScreen";
+import TrainingSessionDetail from "./src/screens/TrainingSessionDetail";
 
 import { PortalHost } from "@rn-primitives/portal";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import QrScanner from "./src/screens/QrScannerScreen";
 
 const Stack = createNativeStackNavigator();
@@ -56,7 +60,6 @@ function MasterTabs() {
         headerShown: false,
         tabBarStyle: {
           backgroundColor: "#1A1A1A",
-          height: 60,
           borderTopWidth: 0,
         },
         tabBarActiveTintColor: "#D4AF37",
@@ -69,15 +72,6 @@ function MasterTabs() {
         options={{
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="people" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Album"
-        component={AlbumScreen}
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="images" size={size} color={color} />
           ),
         }}
       />
@@ -101,7 +95,6 @@ function PractitionerTabs() {
         headerShown: false,
         tabBarStyle: {
           backgroundColor: "#1A1A1A",
-          height: 60,
           borderTopWidth: 0,
         },
         tabBarActiveTintColor: "#D4AF37",
@@ -117,15 +110,7 @@ function PractitionerTabs() {
           ),
         }}
       />
-      <Tab.Screen
-        name="Entrar"
-        component={JoinClassGroup}
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="qr-code" size={size} color={color} />
-          ),
-        }}
-      />
+
       <Tab.Screen
         name="Album"
         component={AlbumScreen}
@@ -157,7 +142,10 @@ function AppRoutes() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Navigator
+        key={user ? "authed-stack" : "guest-stack"}
+        screenOptions={{ headerShown: false }}
+      >
         {!user ? (
           <>
             <Stack.Screen name="SignIn" component={Login} />
@@ -170,6 +158,12 @@ function AppRoutes() {
               component={isMaster ? MasterTabs : PractitionerTabs}
             />
             <Stack.Screen name="DetalheTurma" component={DetalheTurma} />
+            <Stack.Screen name="MasterAlbums" component={MasterAlbumsScreen} />
+            <Stack.Screen name="AlbumDetail" component={AlbumDetailScreen} />
+            <Stack.Screen
+              name="TrainingSessionDetail"
+              component={TrainingSessionDetail}
+            />
             <Stack.Screen
               name="PractitionerClassGroupDetail"
               component={PractitionerClassGroupDetail}
@@ -186,12 +180,14 @@ function AppRoutes() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <ThemeProvider>
-        <AppRoutes />
-        <PortalHost />
-        <Toast config={toastConfig} />
-      </ThemeProvider>
-    </AuthProvider>
+    <SafeAreaProvider>
+      <AuthProvider>
+        <ThemeProvider>
+          <AppRoutes />
+          <PortalHost />
+          <Toast config={toastConfig} />
+        </ThemeProvider>
+      </AuthProvider>
+    </SafeAreaProvider>
   );
 }

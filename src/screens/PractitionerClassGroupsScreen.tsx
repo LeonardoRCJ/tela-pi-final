@@ -30,6 +30,7 @@ import { SimpleClassGroup } from "../interfaces/classgroup";
 type RootStackParamList = {
   Main: { screen?: string };
   DetalheTurma: { classGroupId: number; classGroupName: string };
+  FrequenciaAluno: { practitionerId?: string | number; alunoNome?: string };
   QrScanner: undefined;
   Entrar: undefined;
 };
@@ -68,6 +69,8 @@ export default function PractitionerClassGroups() {
       } else {
         setClassGroup(data ?? null);
       }
+
+      console.log(response.data);
     } catch (err: any) {
       const status = err?.response?.status;
       // 404 significa que o praticante não está em nenhuma turma
@@ -136,15 +139,13 @@ export default function PractitionerClassGroups() {
 
   if (isLoading && !refreshing) {
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
         <View style={styles.header}>
           <View>
             <Text style={[styles.headerTitle, { fontSize: fs(24) }]}>
               Minha Turma
             </Text>
-            <Text
-              style={[styles.headerSubtitle, { fontSize: fs(12) }]}
-            >
+            <Text style={[styles.headerSubtitle, { fontSize: fs(12) }]}>
               Sua turma atual
             </Text>
           </View>
@@ -162,15 +163,13 @@ export default function PractitionerClassGroups() {
 
   if (!classGroup) {
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
         <View style={styles.header}>
           <View>
             <Text style={[styles.headerTitle, { fontSize: fs(24) }]}>
               Minha Turma
             </Text>
-            <Text
-              style={[styles.headerSubtitle, { fontSize: fs(12) }]}
-            >
+            <Text style={[styles.headerSubtitle, { fontSize: fs(12) }]}>
               Sua turma atual
             </Text>
           </View>
@@ -211,9 +210,7 @@ export default function PractitionerClassGroups() {
                 color="#0F0F0F"
                 style={{ marginRight: 10 }}
               />
-              <Text
-                style={[styles.scanButtonText, { fontSize: fs(15) }]}
-              >
+              <Text style={[styles.scanButtonText, { fontSize: fs(15) }]}>
                 Escanear QR Code
               </Text>
             </TouchableOpacity>
@@ -225,9 +222,7 @@ export default function PractitionerClassGroups() {
                 navigation.dispatch(CommonActions.navigate("Entrar"))
               }
             >
-              <Text
-                style={[styles.codeButtonText, { fontSize: fs(14) }]}
-              >
+              <Text style={[styles.codeButtonText, { fontSize: fs(14) }]}>
                 Digitar código manualmente
               </Text>
             </TouchableOpacity>
@@ -242,7 +237,7 @@ export default function PractitionerClassGroups() {
   ========================= */
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
       {/* HEADER */}
       <View style={styles.header}>
         <View>
@@ -289,14 +284,9 @@ export default function PractitionerClassGroups() {
           <View style={styles.infoRow}>
             <Ionicons name="person-outline" size={16} color="#666" />
             <Text
-              style={[
-                styles.infoText,
-                { fontSize: fs(14), color: colors.card },
-              ]}
+              style={[styles.infoText, { fontSize: fs(14), color: "#AAA" }]}
             >
-              {classGroup.countPractitioners}{" "}
-              {classGroup.countPractitioners === 1 ? "aluno" : "alunos"}{" "}
-              matriculados
+              {classGroup.countPractitioners || 0} matriculados
             </Text>
           </View>
         </View>
@@ -307,9 +297,9 @@ export default function PractitionerClassGroups() {
           activeOpacity={0.85}
           onPress={() =>
             navigation.dispatch(
-              CommonActions.navigate("DetalheTurma", {
-                classGroupId: classGroup.id,
-                classGroupName: classGroup.name,
+              CommonActions.navigate("FrequenciaAluno", {
+                practitionerId: classGroup.practitionerId,
+                alunoNome: "Minha Frequência",
               }),
             )
           }
@@ -320,9 +310,7 @@ export default function PractitionerClassGroups() {
             color="#0F0F0F"
             style={{ marginRight: 10 }}
           />
-          <Text
-            style={[styles.detailsButtonText, { fontSize: fs(15) }]}
-          >
+          <Text style={[styles.detailsButtonText, { fontSize: fs(15) }]}>
             Ver minhas frequências
           </Text>
         </TouchableOpacity>

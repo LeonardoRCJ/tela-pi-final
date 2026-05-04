@@ -4,7 +4,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 // Cria o contexto
 export const AccessibilityContext = createContext();
 
-export function AccessibilityProvider({ children }) {
+export function AccessibilityProvider({ children } ) {
   // Estados de acessibilidade
   const [fonteMaior, setFonteMaior] = useState(false);
   const [altoContraste, setAltoContraste] = useState(false);

@@ -5,6 +5,7 @@ export interface SimpleClassGroup {
   name: string;
   countPractitioners: number;
   qrToken: string;
+  practitionerId: number;
 }
 
 export interface ClassGroup {
@@ -12,5 +13,4 @@ export interface ClassGroup {
   name: string;
   qrToken: string;
   practitioners: Practitioner[];
-  
 }
