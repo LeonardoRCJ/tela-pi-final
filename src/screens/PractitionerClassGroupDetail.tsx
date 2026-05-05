@@ -12,7 +12,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 
-import { useTheme } from "../context/ThemeContext";
+import { ThemeContext, useTheme } from "../context/ThemeContext";
 import { AuthContext } from "../context/AuthContext";
 import api from "../services/api";
 import { Attendances } from "../interfaces/practitioner";
@@ -61,7 +61,7 @@ function StatCard({
 // ─── FREQUENCY ROW ────────────────────────────────────────────────────────────
 
 function FrequencyRow({ item }: { item: Attendances }) {
-  const { colors, fs } = useTheme();
+  const { colors, fs, t } = useContext(ThemeContext);
   const isPresent = item.present === true;
 
   return (
@@ -106,7 +106,7 @@ function FrequencyRow({ item }: { item: Attendances }) {
             },
           ]}
         >
-          {isPresent ? "PRESENTE" : "FALTA"}
+          {isPresent ? t.present : t.absent}
         </Text>
       </View>
     </View>

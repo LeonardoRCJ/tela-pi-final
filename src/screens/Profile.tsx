@@ -247,7 +247,7 @@ export default function PerfilProfessor() {
           </Text>
 
           <Text style={[styles.roleText, { fontSize: fs(13) }]}>
-            {isMaster ? "Mestre" : "Praticante"}
+            {isMaster ? t.master : t.practitioner}
           </Text>
 
           <TouchableOpacity
@@ -266,7 +266,7 @@ export default function PerfilProfessor() {
                 { fontSize: fs(14) },
               ]}
             >
-              Editar Perfil
+              { t.editProfile }
             </Text>
           </TouchableOpacity>
         </View>
@@ -279,7 +279,7 @@ export default function PerfilProfessor() {
               { color: subTextColor, fontSize: fs(12) },
             ]}
           >
-            PREFERÊNCIAS
+            { t.preferences }
           </Text>
 
           <View style={[styles.settingRow, { backgroundColor: cardColor }]}>
@@ -298,7 +298,7 @@ export default function PerfilProfessor() {
                   { color: textColor, fontSize: fs(16) },
                 ]}
               >
-                Tema Escuro
+                { t.darkTheme }
               </Text>
             </View>
 
@@ -325,7 +325,7 @@ export default function PerfilProfessor() {
                   { color: textColor, fontSize: fs(16) },
                 ]}
               >
-                Idioma
+                { t.language }
               </Text>
             </View>
 
@@ -335,7 +335,7 @@ export default function PerfilProfessor() {
                 { color: subTextColor, fontSize: fs(14) },
               ]}
             >
-              {language === "en-US" ? "Português" : "English"}
+              {language === "en-US" ? t.portuguese : t.english}
             </Text>
           </TouchableOpacity>
 
@@ -349,7 +349,7 @@ export default function PerfilProfessor() {
               },
             ]}
           >
-            ACESSIBILIDADE
+            { t.accessibility }
           </Text>
 
           <View style={[styles.settingRow, { backgroundColor: cardColor }]}>
@@ -364,7 +364,7 @@ export default function PerfilProfessor() {
                   { color: textColor, fontSize: fs(16) },
                 ]}
               >
-                Fonte Ampliada
+                { t.largeFonts }
               </Text>
             </View>
 
@@ -388,7 +388,7 @@ export default function PerfilProfessor() {
                   { color: textColor, fontSize: fs(16) },
                 ]}
               >
-                Alto Contraste
+                { t.highContrast }
               </Text>
             </View>
 
@@ -420,7 +420,7 @@ export default function PerfilProfessor() {
                 { fontSize: fs(16) },
               ]}
             >
-              Sair da Conta
+             { t.logout }
             </Text>
           </TouchableOpacity>
         </View>

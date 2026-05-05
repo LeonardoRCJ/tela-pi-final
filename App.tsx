@@ -9,7 +9,7 @@ import { Ionicons } from "@expo/vector-icons";
 
 // CONTEXTS
 import { AuthProvider, AuthContext } from "./src/context/AuthContext";
-import { ThemeProvider } from "./src/context/ThemeContext";
+import { ThemeContext, ThemeProvider } from "./src/context/ThemeContext";
 
 // SCREENS
 import Login from "./src/screens/Login";
@@ -33,6 +33,7 @@ import QrScanner from "./src/screens/QrScannerScreen";
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
+
 const toastConfig = {
   success: (props: any) => (
     <BaseToast
@@ -54,6 +55,8 @@ const toastConfig = {
 };
 
 function MasterTabs() {
+const { t } = useContext(ThemeContext);
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -76,7 +79,7 @@ function MasterTabs() {
         }}
       />
       <Tab.Screen
-        name="Perfil"
+        name={t.profileTitle}
         component={PerfilProfessor}
         options={{
           tabBarIcon: ({ color, size }) => (
@@ -89,6 +92,7 @@ function MasterTabs() {
 }
 
 function PractitionerTabs() {
+  const { t } = useContext(ThemeContext)
   return (
     <Tab.Navigator
       screenOptions={{
@@ -102,7 +106,7 @@ function PractitionerTabs() {
       }}
     >
       <Tab.Screen
-        name="Turmas"
+        name={ t.practitionerClassTitle }
         component={PractitionerClassGroups}
         options={{
           tabBarIcon: ({ color, size }) => (
@@ -121,7 +125,7 @@ function PractitionerTabs() {
         }}
       />
       <Tab.Screen
-        name="Perfil"
+        name= { t.profileTitle }
         component={PerfilProfessor}
         options={{
           tabBarIcon: ({ color, size }) => (

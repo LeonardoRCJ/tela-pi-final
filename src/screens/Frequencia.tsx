@@ -22,12 +22,12 @@ import { AppContext } from "../context/AppContext";
 import { Attendances } from "../interfaces/practitioner";
 import api from "../services/api";
 import Toast from "react-native-toast-message";
+import { AuthContext } from "../context/AuthContext";
 
 export default function FrequenciaAluno({ route, navigation }: any) {
   // 3. Consumir acessibilidade
-  const { fs, colors } = useContext(AppContext);
+  const { fs, colors, t } = useContext(AppContext);
 
-  const alunoName = route?.params?.alunoNome || "Aluno";
   const practitionerId = route?.params?.practitionerId;
   const initialHistorico = route?.params?.historico || [];
 
@@ -42,6 +42,8 @@ export default function FrequenciaAluno({ route, navigation }: any) {
       const { data } = await api.get(
         `/training-sessions/practitioner/${practitionerId}/record`,
       );
+
+      
       setHistorico(data);
     } catch (err: any) {
       Toast.show({
@@ -114,7 +116,7 @@ export default function FrequenciaAluno({ route, navigation }: any) {
             },
           ]}
         >
-          {item.present ? "PRESENTE" : "FALTA"}
+          {item.present ? t.present : t.absent }
         </Text>
       </View>
     );
@@ -128,18 +130,18 @@ export default function FrequenciaAluno({ route, navigation }: any) {
         </TouchableOpacity>
         {/* ACESSIBILIDADE: Título do Header */}
         <Text style={[styles.headerTitle, { fontSize: fs(18) }]}>
-          Análise de Frequência
+          { t.frequencyAnalysis }
         </Text>
       </View>
 
       <View style={styles.statusCard}>
         {/* ACESSIBILIDADE: Nome do Aluno */}
         <Text style={[styles.studentName, { fontSize: fs(24) }]}>
-          {alunoName}
+          { t.myFrequencyTitle }
         </Text>
 
         <Text style={[styles.statLabel, { fontSize: fs(12) }]}>
-          Aproveitamento Total
+          { t.fullFrequency }
         </Text>
 
         {/* ACESSIBILIDADE: Valor da Porcentagem (Grande) */}
@@ -170,16 +172,16 @@ export default function FrequenciaAluno({ route, navigation }: any) {
         <View style={styles.miniStatsRow}>
           {/* ACESSIBILIDADE: Contadores de Presença/Falta */}
           <Text style={[styles.miniStatText, { fontSize: fs(12) }]}>
-            Presenças: {stats.presencas}
+            { t.presenceLabel }: {stats.presencas}
           </Text>
           <Text style={[styles.miniStatText, { fontSize: fs(12) }]}>
-            Faltas: {stats.faltas}
+            { t.absencesLabel }: {stats.faltas}
           </Text>
         </View>
       </View>
 
       <Text style={[styles.sectionTitle, { fontSize: fs(14) }]}>
-        Histórico de Aulas
+        { t.classesRecordLabel }
       </Text>
 
       {loading && !refreshing ? (

@@ -18,8 +18,8 @@ import {
 } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
-import { AppContext } from "../context/AppContext";
 import { AuthContext } from "../context/AuthContext";
+import { ThemeContext } from "../context/ThemeContext";
 import api from "../services/api";
 import { SimpleClassGroup } from "../interfaces/classgroup";
 
@@ -30,7 +30,7 @@ import { SimpleClassGroup } from "../interfaces/classgroup";
 type RootStackParamList = {
   Main: { screen?: string };
   DetalheTurma: { classGroupId: number; classGroupName: string };
-  FrequenciaAluno: { practitionerId?: string | number; alunoNome?: string };
+  FrequenciaAluno: { practitionerId?: number | number; alunoNome?: string };
   QrScanner: undefined;
   Entrar: undefined;
 };
@@ -42,7 +42,7 @@ type NavigationProps = NativeStackNavigationProp<RootStackParamList>;
 export default function PractitionerClassGroups() {
   const navigation = useNavigation<NavigationProps>();
 
-  const { fs, colors } = useContext(AppContext);
+  const { t, fs, colors } = useContext(ThemeContext);
   const { token, user } = useContext(AuthContext);
 
   const [classGroup, setClassGroup] = useState<SimpleClassGroup | null>(null);
@@ -143,10 +143,10 @@ export default function PractitionerClassGroups() {
         <View style={styles.header}>
           <View>
             <Text style={[styles.headerTitle, { fontSize: fs(24) }]}>
-              Minha Turma
+              { t.myClass }
             </Text>
             <Text style={[styles.headerSubtitle, { fontSize: fs(12) }]}>
-              Sua turma atual
+              { t.myClassSubtitle }
             </Text>
           </View>
         </View>
@@ -167,10 +167,12 @@ export default function PractitionerClassGroups() {
         <View style={styles.header}>
           <View>
             <Text style={[styles.headerTitle, { fontSize: fs(24) }]}>
-              Minha Turma
+              { t.myClass }
             </Text>
             <Text style={[styles.headerSubtitle, { fontSize: fs(12) }]}>
-              Sua turma atual
+              {
+                t.myClassSubtitle
+              }
             </Text>
           </View>
         </View>
@@ -242,10 +244,10 @@ export default function PractitionerClassGroups() {
       <View style={styles.header}>
         <View>
           <Text style={[styles.headerTitle, { fontSize: fs(24) }]}>
-            Minha Turma
+            {t.myClass}
           </Text>
           <Text style={[styles.headerSubtitle, { fontSize: fs(12) }]}>
-            Sua turma atual
+            { t.myClassSubtitle }
           </Text>
         </View>
       </View>
@@ -270,7 +272,7 @@ export default function PractitionerClassGroups() {
 
             <View style={styles.classCardBadge}>
               <Text style={[styles.badgeText, { fontSize: fs(11) }]}>
-                INSCRITO
+                { t.enrolled }
               </Text>
             </View>
           </View>
@@ -286,7 +288,7 @@ export default function PractitionerClassGroups() {
             <Text
               style={[styles.infoText, { fontSize: fs(14), color: "#AAA" }]}
             >
-              {classGroup.countPractitioners || 0} matriculados
+              {classGroup.countPractitioners || 0} {""} {t.enrolleds }
             </Text>
           </View>
         </View>
@@ -311,7 +313,7 @@ export default function PractitionerClassGroups() {
             style={{ marginRight: 10 }}
           />
           <Text style={[styles.detailsButtonText, { fontSize: fs(15) }]}>
-            Ver minhas frequências
+            { t.myFrequency}
           </Text>
         </TouchableOpacity>
 
@@ -328,7 +330,7 @@ export default function PractitionerClassGroups() {
             style={{ marginRight: 10 }}
           />
           <Text style={[styles.leaveButtonText, { fontSize: fs(15) }]}>
-            Sair da turma
+            { t.leaveClassTitle }
           </Text>
         </TouchableOpacity>
       </ScrollView>
