@@ -72,7 +72,7 @@ export default function PerfilProfessor() {
 
   async function getUserProfile() {
     try {
-      const response = await api.get("/auth/profile", {
+      const response = await api.get("/users/profile", {
         headers: {
           Authorization: `Bearer ${token}`,
         },

@@ -14,19 +14,14 @@ import Toast from "react-native-toast-message";
 import api from "../services/api";
 
 interface Attendance {
-  id?: number;
+  practitionerId: number;
   present: boolean;
-  date?: string;
-  TrainingSessionDate?: string;
-  trainingSessionId?: number;
-  practitionerName?: string;
 }
 
 interface Practitioner {
   id: number;
-  name?: string;
-  practitionerName?: string;
-  attendances?: Attendance[];
+  name: string;
+  frequency: number;
 }
 
 interface TrainingSession {
@@ -41,6 +36,7 @@ export default function TrainingSessionDetail({ route, navigation }: any) {
     sessionId,
     sessionDate: initialDate,
     classGroupName: initialName,
+    classGroupId,
   } = route.params;
 
   const [sessionData, setSessionData] = useState<TrainingSession | null>(null);
@@ -54,6 +50,19 @@ export default function TrainingSessionDetail({ route, navigation }: any) {
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [practitioners, setPractitioners] = useState<Practitioner[] | null>(null);
+
+  const loadPractitioners = async () => {
+    try {
+      const response = await api.get(`/class-groups/${classGroupId}/practitioners`);
+
+      const data = response.data;
+
+      setPractitioners(data);
+    }catch(err: any) {
+
+    }
+  }
 
   const loadSessionDetails = useCallback(async () => {
     try {
@@ -67,32 +76,14 @@ export default function TrainingSessionDetail({ route, navigation }: any) {
 
       setSessionData(data);
 
-      // Preenche o estado local baseando-se nas presenças já existentes no banco
       const initialMap: Record<number, boolean> = {};
 
-      data.practitioners.forEach((practitioner) => {
-        const pName = (practitioner.name || practitioner.practitionerName || "")
-          .trim()
-          .toLowerCase();
-
-        let existingAtt = attendances.find(
-          (a) => (a.practitionerName || "").trim().toLowerCase() === pName,
-        );
-
-        // Fallback: se não achar na lista do batch, procura nas presenças aninhadas no aluno
-        if (!existingAtt && practitioner.attendances) {
-          existingAtt = practitioner.attendances.find(
-            (a) =>
-              a.trainingSessionId === sessionId ||
-              a.date === data.date ||
-              a.TrainingSessionDate === data.date,
-          );
-        }
-
-        if (existingAtt !== undefined && existingAtt !== null) {
-          initialMap[practitioner.id] = existingAtt.present;
-        }
+      attendances.forEach((attendance) => {
+        initialMap[attendance.practitionerId] = attendance.present;
       });
+
+      console.log(attendances);
+console.log(initialMap);
 
       setLocalAttendances(initialMap);
     } catch (err: any) {
@@ -110,12 +101,14 @@ export default function TrainingSessionDetail({ route, navigation }: any) {
   }, [sessionId]);
 
   useEffect(() => {
+    loadPractitioners();
     loadSessionDetails();
-  }, [loadSessionDetails]);
+  }, [loadSessionDetails, classGroupId]);
 
   const onRefresh = async () => {
     setRefreshing(true);
     await loadSessionDetails();
+    await loadPractitioners();
     setRefreshing(false);
   };
 
@@ -132,12 +125,6 @@ export default function TrainingSessionDetail({ route, navigation }: any) {
     return dateString;
   }
 
-  function getFrequency(item: Practitioner) {
-    if (!item.attendances || item.attendances.length === 0) return "0%";
-    const total = item.attendances.length;
-    const present = item.attendances.filter((x) => x.present).length;
-    return `${Math.round((present / total) * 100)}%`;
-  }
 
   // Apenas altera a memória local
   function toggleAttendance(practitionerId: number, present: boolean) {
@@ -154,6 +141,8 @@ export default function TrainingSessionDetail({ route, navigation }: any) {
         practitionerId: Number(id),
         present,
       }),
+
+      onRefresh()
     );
 
     if (payloadAttendances.length === 0) {
@@ -195,7 +184,7 @@ export default function TrainingSessionDetail({ route, navigation }: any) {
   const renderItem = ({ item }: { item: Practitioner }) => {
     if (!sessionData) return null;
 
-    const displayName = item.practitionerName || item.name || "Aluno sem nome";
+    const displayName = item.name || "Aluno sem nome";
 
     // Lê a informação do dicionário em memória
     const isPresent = localAttendances[item.id] === true;
@@ -212,7 +201,7 @@ export default function TrainingSessionDetail({ route, navigation }: any) {
         <View style={styles.cardInfo}>
           <Text style={styles.studentName}>{displayName}</Text>
           <Text style={styles.frequency}>
-            Frequência geral: {getFrequency(item)}
+            Frequência geral: {Math.round(item.frequency)}%
           </Text>
         </View>
 
@@ -282,12 +271,10 @@ export default function TrainingSessionDetail({ route, navigation }: any) {
       ) : (
         <FlatList
           data={
-            Array.isArray(sessionData?.practitioners)
-              ? sessionData.practitioners
-              : []
+            practitioners
           }
-          keyExtractor={(item, index) =>
-            item.id ? item.id.toString() : `temp-${index}`
+          keyExtractor={(item) =>
+            item.id.toString()!
           }
           renderItem={renderItem}
           refreshControl={
@@ -310,7 +297,7 @@ export default function TrainingSessionDetail({ route, navigation }: any) {
       )}
 
       {/* BARRA INFERIOR DE SALVAR (APENAS SE HOUVER ALUNOS) */}
-      {!loading && sessionData?.practitioners?.length ? (
+      {!loading && practitioners?.length ? (
         <View style={styles.bottomBar}>
           <TouchableOpacity
             style={styles.saveBatchBtn}
