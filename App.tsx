@@ -1,29 +1,28 @@
 import React, { useContext } from "react";
 import "./global.css";
 
-import { NavigationContainer } from "@react-navigation/native";
-import Toast, { BaseToast, ErrorToast } from "react-native-toast-message";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import Toast, { BaseToast, ErrorToast } from "react-native-toast-message";
 
 // CONTEXTS
-import { AuthProvider, AuthContext } from "./src/context/AuthContext";
-import { ThemeContext, ThemeProvider } from "./src/context/ThemeContext";
+import { AuthContext, AuthProvider } from "./src/context/AuthContext";
+import { ThemeContext, ThemeProvider, useTheme } from "./src/context/ThemeContext";
 
 // SCREENS
-import Login from "./src/screens/Login";
-import Cadastro from "./src/screens/SignUp";
-import ClassGroups from "./src/screens/ClassGroups";
-import PerfilProfessor from "./src/screens/Profile";
-import DetalheTurma from "./src/screens/ClassGroupDetail";
-import FrequenciaAluno from "./src/screens/Frequencia";
-import JoinClassGroup from "./src/screens/CommonClassGroupsScreen";
-import PractitionerClassGroups from "./src/screens/PractitionerClassGroupsScreen";
-import PractitionerClassGroupDetail from "./src/screens/PractitionerClassGroupDetail";
-import AlbumScreen from "./src/screens/AlbumScreen";
-import MasterAlbumsScreen from "./src/screens/MasterAlbumsScreen";
 import AlbumDetailScreen from "./src/screens/AlbumDetailScreen";
+import AlbumScreen from "./src/screens/AlbumScreen";
+import DetalheTurma from "./src/screens/ClassGroupDetail";
+import ClassGroups from "./src/screens/ClassGroups";
+import FrequenciaAluno from "./src/screens/Frequencia";
+import Login from "./src/screens/Login";
+import MasterAlbumsScreen from "./src/screens/MasterAlbumsScreen";
+import PractitionerClassGroupDetail from "./src/screens/PractitionerClassGroupDetail";
+import PractitionerClassGroups from "./src/screens/PractitionerClassGroupsScreen";
+import PerfilProfessor from "./src/screens/Profile";
+import Cadastro from "./src/screens/SignUp";
 import TrainingSessionDetail from "./src/screens/TrainingSessionDetail";
 
 import { PortalHost } from "@rn-primitives/portal";
@@ -55,26 +54,28 @@ const toastConfig = {
 };
 
 function MasterTabs() {
-const { t } = useContext(ThemeContext);
+const { t } = useContext(ThemeContext)
+const { fs, colors } = useTheme();
 
   return (
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: "#1A1A1A",
-          borderTopWidth: 0,
+          backgroundColor: colors.bg,
+          borderTopWidth: 0.5,
+          borderColor: colors.cardBorder
         },
         tabBarActiveTintColor: "#D4AF37",
         tabBarInactiveTintColor: "#666",
       }}
     >
       <Tab.Screen
-        name="Turmas"
+        name={ t.masterClassesTitle}
         component={ClassGroups}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="people" size={size} color={color} />
+            <Ionicons name="people" size={fs(size)} color={color} />
           ),
         }}
       />
@@ -83,8 +84,8 @@ const { t } = useContext(ThemeContext);
         component={PerfilProfessor}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person" size={size} color={color} />
-          ),
+            <Ionicons name="person" size={fs(size)} color={color} />
+          )
         }}
       />
     </Tab.Navigator>
@@ -93,6 +94,7 @@ const { t } = useContext(ThemeContext);
 
 function PractitionerTabs() {
   const { t } = useContext(ThemeContext)
+  const { fs, colors } = useTheme();
   return (
     <Tab.Navigator
       screenOptions={{

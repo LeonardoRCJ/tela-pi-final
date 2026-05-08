@@ -1,16 +1,17 @@
+import { Ionicons } from "@expo/vector-icons";
 import React, { useCallback, useEffect, useState } from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  TouchableOpacity,
-  RefreshControl,
   ActivityIndicator,
+  FlatList,
+  RefreshControl,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Ionicons } from "@expo/vector-icons";
 import Toast from "react-native-toast-message";
+import { useTheme } from "../context/ThemeContext";
 import api from "../services/api";
 
 interface Attendance {
@@ -40,6 +41,8 @@ export default function TrainingSessionDetail({ route, navigation }: any) {
   } = route.params;
 
   const [sessionData, setSessionData] = useState<TrainingSession | null>(null);
+
+  const { fs, colors, t } = useTheme();
 
   // Estado local para armazenar as marcações em memória antes de salvar (batch)
   // practitionerId -> boolean (present/absent)
@@ -81,10 +84,6 @@ export default function TrainingSessionDetail({ route, navigation }: any) {
       attendances.forEach((attendance) => {
         initialMap[attendance.practitionerId] = attendance.present;
       });
-
-      console.log(attendances);
-console.log(initialMap);
-
       setLocalAttendances(initialMap);
     } catch (err: any) {
       console.log("ERRO GET SESSION:", err?.response?.data || err.message);
@@ -100,10 +99,22 @@ console.log(initialMap);
     }
   }, [sessionId]);
 
-  useEffect(() => {
-    loadPractitioners();
-    loadSessionDetails();
+  const loadData = useCallback(async () => {
+    setLoading(true);
+  
+    try {
+      await Promise.all([
+        loadPractitioners(),
+        loadSessionDetails(),
+      ]);
+    } finally {
+      setLoading(false);
+    }
   }, [loadSessionDetails, classGroupId]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -111,6 +122,8 @@ console.log(initialMap);
     await loadPractitioners();
     setRefreshing(false);
   };
+
+  
 
   function formatDateToBR(dateString: any) {
     if (!dateString) return "";
@@ -141,8 +154,6 @@ console.log(initialMap);
         practitionerId: Number(id),
         present,
       }),
-
-      onRefresh()
     );
 
     if (payloadAttendances.length === 0) {
@@ -168,7 +179,7 @@ console.log(initialMap);
       });
 
       // Recarrega os dados para ficar consistente com a base
-      await loadSessionDetails();
+      await loadData();
     } catch (err: any) {
       Toast.show({
         type: "error",
@@ -196,12 +207,13 @@ console.log(initialMap);
           styles.card,
           isPresent && styles.cardPresent,
           isAbsent && styles.cardAbsent,
+          { backgroundColor: colors.card, borderColor: colors.cardBorder }
         ]}
       >
         <View style={styles.cardInfo}>
-          <Text style={styles.studentName}>{displayName}</Text>
-          <Text style={styles.frequency}>
-            Frequência geral: {Math.round(item.frequency)}%
+          <Text style={[styles.studentName, { fontSize: fs(15), color: colors.text}]}>{displayName}</Text>
+          <Text style={[styles.frequency, { fontSize: fs(15), color: colors.text}]}>
+            {t.fullFrequency}: {Math.round(item.frequency)}%
           </Text>
         </View>
 
@@ -209,13 +221,14 @@ console.log(initialMap);
           <TouchableOpacity
             style={[
               styles.statusBtn,
+              { backgroundColor: colors.bg},
               isAbsent && { backgroundColor: "#FF4444" },
             ]}
             onPress={() => toggleAttendance(item.id, false)}
           >
             <Ionicons
               name={isAbsent ? "close-circle" : "close-circle-outline"}
-              size={24}
+              size={fs(24)}
               color={isAbsent ? "#FFF" : "#666"}
             />
           </TouchableOpacity>
@@ -223,13 +236,15 @@ console.log(initialMap);
           <TouchableOpacity
             style={[
               styles.statusBtn,
+              { backgroundColor: colors.bg},
               isPresent && { backgroundColor: "#2ECC71" },
+
             ]}
             onPress={() => toggleAttendance(item.id, true)}
           >
             <Ionicons
               name={isPresent ? "checkmark-circle" : "checkmark-circle-outline"}
-              size={24}
+              size={fs(24)}
               color={isPresent ? "#0F0F0F" : "#666"}
             />
           </TouchableOpacity>
@@ -242,21 +257,21 @@ console.log(initialMap);
   const displayDate = sessionData?.date || initialDate;
 
   return (
-    <SafeAreaView style={styles.root}>
+    <SafeAreaView style={[styles.root, { backgroundColor: colors.bg}]}>
       {/* HEADER */}
-      <View style={styles.header}>
+      <View style={[styles.header, { borderBottomColor: colors.cardBorder}]}>
         <TouchableOpacity
-          style={styles.backBtn}
+          style={[styles.backBtn, { backgroundColor: colors.bg}]}
           onPress={() => navigation.goBack()}
         >
-          <Ionicons name="chevron-back" size={22} color="#D4AF37" />
+          <Ionicons name="chevron-back" size={22} color={colors.accent}/>
         </TouchableOpacity>
 
         <View style={styles.headerTitleContainer}>
-          <Text style={styles.title}>{displayGroupName}</Text>
+          <Text style={[styles.title, { fontSize: fs(20), color: colors.text}]}>{displayGroupName}</Text>
           <View style={styles.dateBadge}>
             <Ionicons name="calendar-outline" size={12} color="#D4AF37" />
-            <Text style={styles.dateText}>{formatDateToBR(displayDate)}</Text>
+            <Text style={[styles.dateText, { fontSize: fs(14), color: colors.text}]}>{formatDateToBR(displayDate)}</Text>
           </View>
         </View>
 
@@ -288,7 +303,7 @@ console.log(initialMap);
           ListEmptyComponent={() => (
             <View style={styles.empty}>
               <Ionicons name="people-outline" size={54} color="#333" />
-              <Text style={styles.emptyText}>
+              <Text style={[styles.emptyText, { fontSize: fs(15)}]}>
                 Nenhum aluno cadastrado nesta turma.
               </Text>
             </View>
@@ -298,9 +313,9 @@ console.log(initialMap);
 
       {/* BARRA INFERIOR DE SALVAR (APENAS SE HOUVER ALUNOS) */}
       {!loading && practitioners?.length ? (
-        <View style={styles.bottomBar}>
+        <View style={[styles.bottomBar, { backgroundColor: colors.bg, borderTopColor: colors.cardBorder }]}>
           <TouchableOpacity
-            style={styles.saveBatchBtn}
+            style={[styles.saveBatchBtn]}
             activeOpacity={0.8}
             onPress={saveBatch}
             disabled={saving}
@@ -310,7 +325,7 @@ console.log(initialMap);
             ) : (
               <>
                 <Ionicons name="save-outline" size={20} color="#0F0F0F" />
-                <Text style={styles.saveBatchText}>SALVAR LISTA</Text>
+                <Text style={[styles.saveBatchText, { fontSize: fs(15)}]}>SALVAR LISTA</Text>
               </>
             )}
           </TouchableOpacity>
@@ -399,12 +414,10 @@ const styles = StyleSheet.create({
   },
   studentName: {
     color: "#FFF",
-    fontSize: 15,
     fontWeight: "700",
   },
   frequency: {
     color: "#888",
-    fontSize: 12,
     marginTop: 4,
   },
   actions: {
@@ -429,7 +442,6 @@ const styles = StyleSheet.create({
   emptyText: {
     color: "#666",
     marginTop: 12,
-    fontSize: 14,
   },
   bottomBar: {
     position: "absolute",
@@ -444,6 +456,7 @@ const styles = StyleSheet.create({
   saveBatchBtn: {
     backgroundColor: "#D4AF37",
     paddingVertical: 16,
+    marginBottom: 12,
     borderRadius: 16,
     flexDirection: "row",
     alignItems: "center",
@@ -453,7 +466,6 @@ const styles = StyleSheet.create({
   saveBatchText: {
     color: "#0F0F0F",
     fontWeight: "900",
-    fontSize: 15,
     letterSpacing: 1,
   },
 });
