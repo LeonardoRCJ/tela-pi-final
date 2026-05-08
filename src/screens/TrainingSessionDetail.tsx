@@ -212,7 +212,7 @@ export default function TrainingSessionDetail({ route, navigation }: any) {
       >
         <View style={styles.cardInfo}>
           <Text style={[styles.studentName, { fontSize: fs(15), color: colors.text}]}>{displayName}</Text>
-          <Text style={[styles.frequency, { fontSize: fs(15), color: colors.text}]}>
+          <Text style={[styles.frequency, { fontSize: fs(12), color: colors.text}]}>
             {t.fullFrequency}: {Math.round(item.frequency)}%
           </Text>
         </View>
