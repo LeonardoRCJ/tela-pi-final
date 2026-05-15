@@ -1,31 +1,29 @@
-import React, { useState, useContext, useEffect } from "react";
+import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import * as ImagePicker from "expo-image-picker";
+import React, { useContext, useEffect, useState } from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-  Switch,
-  TextInput,
-  Alert,
-  Modal,
+  ActivityIndicator,
   Image,
   KeyboardAvoidingView,
+  Modal,
   Platform,
-  ActivityIndicator,
+  ScrollView,
+  StyleSheet,
+  Switch,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import * as ImagePicker from "expo-image-picker";
 
-import { AppContext } from "../context/AppContext";
-import { AuthContext } from "../context/AuthContext";
-import api from "../services/api";
-import { User } from "../interfaces/user";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import Toast from "react-native-toast-message";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { AuthContext } from "../context/AuthContext";
 import { ThemeContext } from "../context/ThemeContext";
+import { User } from "../interfaces/user";
+import api from "../services/api";
 
 export type RootStackParamList = {
   SignIn: undefined;
@@ -99,7 +97,7 @@ export default function PerfilProfessor() {
       setSavingProfile(true);
 
       await api.patch(
-        `/auth/${user?.id}`,
+        `/users/${user?.id}`,
         {
           name, 
           bio,

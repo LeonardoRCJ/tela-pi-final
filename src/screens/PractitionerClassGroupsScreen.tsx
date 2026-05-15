@@ -1,27 +1,27 @@
-import React, { useState, useContext, useEffect, useCallback } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Alert,
-  ActivityIndicator,
-  ScrollView,
-  RefreshControl,
-} from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import {
-  useNavigation,
   CommonActions,
   useFocusEffect,
+  useNavigation,
 } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import React, { useCallback, useContext, useState } from "react";
+import {
+  ActivityIndicator,
+  Alert,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import { AuthContext } from "../context/AuthContext";
-import { ThemeContext } from "../context/ThemeContext";
-import api from "../services/api";
+import { useTheme } from "../context/ThemeContext";
 import { SimpleClassGroup } from "../interfaces/classgroup";
+import api from "../services/api";
 
 /* =========================
    TYPES
@@ -42,7 +42,7 @@ type NavigationProps = NativeStackNavigationProp<RootStackParamList>;
 export default function PractitionerClassGroups() {
   const navigation = useNavigation<NavigationProps>();
 
-  const { t, fs, colors } = useContext(ThemeContext);
+  const { t, fs, colors } = useTheme();
   const { token, user } = useContext(AuthContext);
 
   const [classGroup, setClassGroup] = useState<SimpleClassGroup | null>(null);
@@ -140,7 +140,7 @@ export default function PractitionerClassGroups() {
   if (isLoading && !refreshing) {
     return (
       <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
-        <View style={styles.header}>
+        <View style={[styles.header, { borderBottomColor: colors.cardBorder}]}>
           <View>
             <Text style={[styles.headerTitle, { fontSize: fs(24) }]}>
               { t.myClass }
@@ -166,7 +166,7 @@ export default function PractitionerClassGroups() {
       <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
         <View style={styles.header}>
           <View>
-            <Text style={[styles.headerTitle, { fontSize: fs(24) }]}>
+            <Text style={[styles.headerTitle, { fontSize: fs(24), color: colors.text }]}>
               { t.myClass }
             </Text>
             <Text style={[styles.headerSubtitle, { fontSize: fs(12) }]}>
@@ -188,7 +188,7 @@ export default function PractitionerClassGroups() {
             />
           }
         >
-          <View style={styles.emptyContainer}>
+          <View style={[styles.emptyContainer, { backgroundColor: colors.bg}]}>
             <View style={styles.emptyIconWrapper}>
               <Ionicons name="school-outline" size={52} color="#D4AF37" />
             </View>
@@ -241,19 +241,19 @@ export default function PractitionerClassGroups() {
   return (
     <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
       {/* HEADER */}
-      <View style={styles.header}>
+      <View style={[styles.header, { backgroundColor: colors.bgSecondary}]}>
         <View>
-          <Text style={[styles.headerTitle, { fontSize: fs(24) }]}>
+          <Text style={[styles.headerTitle, { fontSize: fs(24), color: colors.text }]}>
             {t.myClass}
           </Text>
-          <Text style={[styles.headerSubtitle, { fontSize: fs(12) }]}>
+          <Text style={[styles.headerSubtitle, { fontSize: fs(12), color: colors.textMuted }]}>
             { t.myClassSubtitle }
           </Text>
         </View>
       </View>
 
       <ScrollView
-        contentContainerStyle={{ flexGrow: 1, padding: 24 }}
+        contentContainerStyle={ {flexGrow: 1, padding: 24, backgroundColor: colors.bg}}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -264,29 +264,29 @@ export default function PractitionerClassGroups() {
         }
       >
         {/* CARD DA TURMA */}
-        <View style={styles.classCard}>
+        <View style={[styles.classCard, { backgroundColor: colors.card, borderColor: colors.cardBorder}]}>
           <View style={styles.classCardIconRow}>
-            <View style={styles.classIconBox}>
+            <View style={[styles.classIconBox, { backgroundColor: colors.bgSecondary}]}>
               <Ionicons name="people" size={28} color="#D4AF37" />
             </View>
 
-            <View style={styles.classCardBadge}>
-              <Text style={[styles.badgeText, { fontSize: fs(11) }]}>
+            <View style={[styles.classCardBadge, { backgroundColor: colors.accent }]}>
+              <Text style={[styles.badgeText, { fontSize: fs(11), color: colors.text }]}>
                 { t.enrolled }
               </Text>
             </View>
           </View>
 
-          <Text style={[styles.className, { fontSize: fs(22) }]}>
+          <Text style={[styles.className, { fontSize: fs(22), color: colors.text }]}>
             {classGroup.name}
           </Text>
 
-          <View style={styles.divider} />
+          <View style={[styles.divider, { borderColor: colors.cardBorder}]} />
 
           <View style={styles.infoRow}>
-            <Ionicons name="person-outline" size={16} color="#666" />
+            <Ionicons name="person-outline" size={16} color={colors.text} />
             <Text
-              style={[styles.infoText, { fontSize: fs(14), color: "#AAA" }]}
+              style={[styles.infoText, { fontSize: fs(14), color: colors.textMuted }]}
             >
               {classGroup.countPractitioners || 0} {""} {t.enrolleds }
             </Text>
