@@ -70,7 +70,7 @@ export default function AlbumCoverImage({ albumId, coverPhotoUrl, style }: Props
   return (
     <Image
       source={{ uri }}
-      style={[styles.image, style]}
+      style={[styles.image]}
       resizeMode="cover"
       onError={onError}
     />
