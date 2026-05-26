@@ -18,8 +18,8 @@ import api from "../services/api";
 import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-
 import { useTheme } from "../context/ThemeContext";
+import TermsModal from "./TermsModal";
 
 export type RootStackParamList = {
   SignIn: undefined;
@@ -35,16 +35,13 @@ function Input({ icon, ...props }: any) {
     <View
       style={[
         styles.inputWrap,
-        {
-          backgroundColor: colors.inputBg,
-          borderColor: colors.cardBorder,
-        },
+        { borderColor: colors.cardBorder, backgroundColor: colors.inputBg },
       ]}
     >
-      <Ionicons name={icon} size={20} color={colors.accent} />
+      <Ionicons name={icon} size={20} color={colors.textMuted} />
       <TextInput
+        style={[styles.input, { color: colors.text, fontSize: fs(12) }]}
         placeholderTextColor={colors.textMuted}
-        style={[styles.input, { color: colors.text, fontSize: fs(15) }]}
         {...props}
       />
     </View>
@@ -55,15 +52,15 @@ export default function Cadastro() {
   const navigation = useNavigation<NavigationProps>();
   const insets = useSafeAreaInsets();
   const { colors, fs, t, isDark } = useTheme();
-
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
+  // ← ADICIONADO
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [termsVisible, setTermsVisible] = useState(false);
   const scale = useRef(new Animated.Value(1)).current;
 
   const animate = (to: number) => {
@@ -76,25 +73,25 @@ export default function Cadastro() {
   async function handleRegister() {
     try {
       setError("");
-
       if (!name || !email || !password || !confirmPassword) {
         setError(t.fillAllFields);
         return;
       }
-
       if (password !== confirmPassword) {
         setError(t.passwordsMismatch);
         return;
       }
-
+      // ← ADICIONADO
+      if (!termsAccepted) {
+        setError((t as any).termsRequired ?? "Você precisa aceitar os Termos de Uso.");
+        return;
+      }
       setLoading(true);
-
       await api.post("/auth/sign-up", {
         name,
         email,
         password,
       });
-
       navigation.navigate("SignIn");
     } catch (err: any) {
       setError(err?.response?.data?.message ?? t.registerFailed);
@@ -106,39 +103,37 @@ export default function Cadastro() {
   const accentSoft = isDark ? `${colors.accent}18` : `${colors.accent}28`;
 
   return (
-    <View style={[styles.root, { backgroundColor: colors.bg }]}>
+    <View style={[styles.root, { backgroundColor: colors.bg, paddingTop: insets.top }]}>
       <View style={[styles.glow1, { backgroundColor: accentSoft }]} />
       <View style={[styles.glow2, { backgroundColor: accentSoft }]} />
 
       <KeyboardAvoidingView
         style={styles.kav}
-        behavior="padding"
-        keyboardVerticalOffset={Platform.OS === "ios" ? insets.top : 0}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
         <ScrollView
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-          bounces={false}
           contentContainerStyle={[
             styles.scrollContent,
-            {
-              minHeight: windowHeight - insets.top - insets.bottom,
-              paddingHorizontal: 24,
-            },
+            { paddingHorizontal: 24, minHeight: windowHeight * 0.85 },
           ]}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
         >
           <View style={styles.hero}>
-            <View style={[styles.logoOuter, { borderColor: `${colors.accent}66` }]}>
-              <View style={[styles.logoInner, { backgroundColor: colors.bgSecondary }]}>
-                <Ionicons name="person-add" size={38} color={colors.accent} />
+            <View
+              style={[
+                styles.logoOuter,
+                { borderColor: colors.cardBorder, backgroundColor: colors.card },
+              ]}
+            >
+              <View style={[styles.logoInner, { backgroundColor: colors.accent }]}>
+                <Ionicons name="barbell-outline" size={34} color="#fff" />
               </View>
             </View>
-
-            <Text style={[styles.brand, { color: colors.text, fontSize: fs(30) }]}>
-              COACH<Text style={{ color: colors.accent }}>PAD</Text>
+            <Text style={[styles.brand, { color: colors.accent, fontSize: fs(12) }]}>
+              COACHPAD
             </Text>
-
-            <Text style={[styles.slogan, { color: colors.textMuted, fontSize: fs(13) }]}>
+            <Text style={[styles.slogan, { color: colors.textMuted, fontSize: fs(12) }]}>
               {t.signUpHeroSlogan}
             </Text>
           </View>
@@ -153,51 +148,81 @@ export default function Cadastro() {
               },
             ]}
           >
-            <Text style={[styles.title, { color: colors.text, fontSize: fs(24) }]}>
+            <Text style={[styles.title, { color: colors.text, fontSize: fs(12) }]}>
               {t.createAccountTitle}
             </Text>
-            <Text style={[styles.subtitle, { color: colors.textMuted, fontSize: fs(13) }]}>
+            <Text style={[styles.subtitle, { color: colors.textMuted, fontSize: fs(12) }]}>
               {t.createAccountSubtitle}
             </Text>
 
-            <View style={{ height: 24 }} />
+            <View style={{ marginTop: 20 }}>
+              <Input
+                icon="person-outline"
+                placeholder={t.namePlaceholder}
+                value={name}
+                onChangeText={setName}
+              />
+              <Input
+                icon="mail-outline"
+                placeholder="E-mail"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                value={email}
+                onChangeText={setEmail}
+              />
+              <Input
+                icon="lock-closed-outline"
+                placeholder={t.passwordPlaceholder}
+                secureTextEntry
+                value={password}
+                onChangeText={setPassword}
+              />
+              <Input
+                icon="lock-closed-outline"
+                placeholder={t.confirmPasswordPlaceholder}
+                secureTextEntry
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+              />
+            </View>
 
-            <Input
-              icon="person-outline"
-              placeholder={t.namePlaceholder}
-              value={name}
-              onChangeText={setName}
-            />
-
-            <Input
-              icon="mail-outline"
-              placeholder={t.emailPlaceholder}
-              value={email}
-              onChangeText={setEmail}
-              autoCapitalize="none"
-            />
-
-            <Input
-              icon="lock-closed-outline"
-              placeholder={t.passwordShort}
-              secureTextEntry
-              value={password}
-              onChangeText={setPassword}
-            />
-
-            <Input
-              icon="shield-checkmark-outline"
-              placeholder={t.confirmPasswordPlaceholder}
-              secureTextEntry
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
-            />
+            {/* ← ADICIONADO: Checkbox Termos */}
+            <TouchableOpacity
+              style={styles.termsRow}
+              onPress={() => setTermsAccepted((v) => !v)}
+              activeOpacity={0.7}
+            >
+              <View
+                style={[
+                  styles.checkbox,
+                  {
+                    borderColor: colors.accent,
+                    backgroundColor: termsAccepted ? colors.accent : "transparent",
+                  },
+                ]}
+              >
+                {termsAccepted && (
+                  <Ionicons name="checkmark" size={14} color={colors.accentForeground} />
+                )}
+              </View>
+              <Text style={{ color: colors.textMuted, fontSize: fs(12), flex: 1 }}>
+                {(t as any).termsPrompt ?? "Li e aceito os "}
+                <Text
+                  style={{ color: colors.accent, fontWeight: "700" }}
+                  onPress={() => setTermsVisible(true)}
+                >
+                  {(t as any).termsLink ?? "Termos de Uso"}
+                </Text>
+              </Text>
+            </TouchableOpacity>
 
             {error ? (
-              <Text style={[styles.error, { color: colors.danger }]}>{error}</Text>
+              <Text style={[styles.error, { color: "#e53e3e", fontSize: fs(12) }]}>
+                {error}
+              </Text>
             ) : null}
 
-            <Animated.View style={{ transform: [{ scale }], marginTop: 10 }}>
+            <Animated.View style={{ transform: [{ scale }] }}>
               <Pressable
                 style={[styles.button, { backgroundColor: colors.accent }]}
                 onPressIn={() => animate(0.97)}
@@ -205,27 +230,37 @@ export default function Cadastro() {
                 onPress={handleRegister}
               >
                 {loading ? (
-                  <ActivityIndicator color={colors.accentForeground} />
+                  <ActivityIndicator color="#fff" />
                 ) : (
                   <>
-                    <Text style={[styles.buttonText, { color: colors.accentForeground }]}>
+                    <Ionicons name="person-add-outline" size={20} color="#fff" />
+                    <Text style={[styles.buttonText, { color: "#fff", fontSize: fs(12) }]}>
                       {t.registerCta}
                     </Text>
-                    <Ionicons name="arrow-forward" size={18} color={colors.accentForeground} />
                   </>
                 )}
               </Pressable>
             </Animated.View>
-
-            <TouchableOpacity style={styles.linkWrap} onPress={() => navigation.goBack()}>
-              <Text style={[styles.link, { color: colors.textMuted }]}>
-                {t.haveAccountPrompt}{" "}
-                <Text style={[styles.linkAccent, { color: colors.accent }]}>{t.signInLink}</Text>
-              </Text>
-            </TouchableOpacity>
           </View>
+
+          <TouchableOpacity style={styles.linkWrap} onPress={() => navigation.goBack()}>
+            <Text style={[styles.link, { color: colors.textMuted, fontSize: fs(12) }]}>
+              {t.haveAccountPrompt}{" "}
+            </Text>
+            <Text style={[styles.linkAccent, { color: colors.accent, fontSize: fs(12) }]}>
+              {t.signInLink}
+            </Text>
+          </TouchableOpacity>
         </ScrollView>
       </KeyboardAvoidingView>
+
+      {/* ← ADICIONADO: Modal */}
+      <TermsModal
+        visible={termsVisible}
+        onClose={() => setTermsVisible(false)}
+        showAcceptButton
+        onAccept={() => setTermsAccepted(true)}
+      />
     </View>
   );
 }
@@ -313,6 +348,22 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     marginLeft: 12,
+  },
+  // ← ADICIONADO
+  termsRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 12,
+    marginTop: 4,
+  },
+  checkbox: {
+    width: 22,
+    height: 22,
+    borderRadius: 6,
+    borderWidth: 2,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 10,
   },
   error: {
     marginTop: 2,
