@@ -1,15 +1,15 @@
 import React, {
-  createContext,
-  useCallback,
-  useEffect,
-  useState,
+    createContext,
+    useCallback,
+    useEffect,
+    useState,
 } from "react";
 
-import * as SecureStore
-  from "expo-secure-store";
+import * as SecureStore from "expo-secure-store";
 
 import { jwtDecode } from "jwt-decode";
 
+import { setAuthToken } from "../services/api";
 import { setSessionInvalidateHandler } from "../services/authSession";
 
 export const AuthContext = createContext();
@@ -33,6 +33,7 @@ export function AuthProvider({
   const logout = useCallback(async () => {
     setUser(null);
     setToken(null);
+    setAuthToken(null);
     try {
       await SecureStore.deleteItemAsync("token");
     } catch (_) {
@@ -69,6 +70,7 @@ export function AuthProvider({
       }
 
       setToken(savedToken);
+      setAuthToken(savedToken);
       setUser({
         id: decoded.id,
         email: decoded.sub,
@@ -90,6 +92,7 @@ export function AuthProvider({
         jwtDecode(accessToken);
 
       setToken(accessToken);
+      setAuthToken(accessToken);
 
       setUser({
         id: decoded.id,

@@ -1,28 +1,26 @@
+import { Ionicons } from "@expo/vector-icons";
 import React, {
-  useMemo,
-  useContext,
-  useState,
-  useEffect,
-  useCallback,
+    useCallback,
+    useContext,
+    useEffect,
+    useMemo,
+    useState,
 } from "react"; // 1. Adicionado useContext
 import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  SafeAreaView,
-  TouchableOpacity,
-  ActivityIndicator,
-  RefreshControl,
+    ActivityIndicator,
+    FlatList,
+    RefreshControl,
+    SafeAreaView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 
 // 2. Importar o Contexto
-import { AppContext } from "../context/AppContext";
-import { Attendances } from "../interfaces/practitioner";
-import api from "../services/api";
 import Toast from "react-native-toast-message";
-import { AuthContext } from "../context/AuthContext";
+import { AppContext } from "../context/AppContext";
+import api from "../services/api";
 
 export default function FrequenciaAluno({ route, navigation }: any) {
   // 3. Consumir acessibilidade
@@ -125,7 +123,7 @@ export default function FrequenciaAluno({ route, navigation }: any) {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <TouchableOpacity onPress={() => navigation.goBack()} accessibilityLabel={"Voltar para a tela anterior"}>
           <Ionicons name="arrow-back" size={24} color="#D4AF37" />
         </TouchableOpacity>
         {/* ACESSIBILIDADE: Título do Header */}

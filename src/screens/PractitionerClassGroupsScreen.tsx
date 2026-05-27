@@ -43,7 +43,7 @@ export default function PractitionerClassGroups() {
   const navigation = useNavigation<NavigationProps>();
 
   const { t, fs, colors } = useTheme();
-  const { token, user } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
 
   const [classGroup, setClassGroup] = useState<SimpleClassGroup | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -56,11 +56,7 @@ export default function PractitionerClassGroups() {
   const getMyClassGroup = async () => {
     setIsLoading(true);
     try {
-      const response = await api.get("/class-groups/my", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await api.get("/class-groups/my");
 
       // Aceita tanto objeto único quanto array com um item
       const data = response.data;
@@ -116,11 +112,6 @@ export default function PractitionerClassGroups() {
             try {
               await api.delete(
                 `/class-groups/${classGroup.id}/practitioners/${user.id}/remove`,
-                {
-                  headers: {
-                    Authorization: `Bearer ${token}`,
-                  },
-                },
               );
               setClassGroup(null);
             } catch (err: any) {
@@ -205,6 +196,8 @@ export default function PractitionerClassGroups() {
               style={styles.scanButton}
               activeOpacity={0.85}
               onPress={() => navigation.navigate("QrScanner")}
+              accessibilityLabel="Escanear QR Code"
+              accessibilityRole="button"
             >
               <Ionicons
                 name="qr-code-outline"
@@ -223,6 +216,8 @@ export default function PractitionerClassGroups() {
               onPress={() =>
                 navigation.dispatch(CommonActions.navigate("Entrar"))
               }
+              accessibilityLabel="Digitar código manualmente"
+              accessibilityRole="button"
             >
               <Text style={[styles.codeButtonText, { fontSize: fs(14) }]}>
                 Digitar código manualmente
@@ -305,6 +300,8 @@ export default function PractitionerClassGroups() {
               }),
             )
           }
+          accessibilityLabel={t.myFrequency ?? "Minha frequência"}
+          accessibilityRole="button"
         >
           <Ionicons
             name="stats-chart-outline"
@@ -322,6 +319,8 @@ export default function PractitionerClassGroups() {
           style={styles.leaveButton}
           activeOpacity={0.7}
           onPress={handleLeave}
+          accessibilityLabel={t.leaveClassTitle ?? "Sair da turma"}
+          accessibilityRole="button"
         >
           <Ionicons
             name="exit-outline"

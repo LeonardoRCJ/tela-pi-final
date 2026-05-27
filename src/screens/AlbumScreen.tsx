@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { CommonActions, useFocusEffect, useNavigation } from "@react-navigation/native";
-import React, { useCallback, useContext, useState } from "react";
+import React, { useCallback, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -12,7 +12,6 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { AuthContext } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 import AlbumCoverImage from "../components/AlbumCoverImage";
 import api from "../services/api";
@@ -39,7 +38,6 @@ function mapAlbumDto(raw: any, untitled: string): Album {
 export default function AlbumScreen() {
   const navigation = useNavigation<any>();
   const { colors, fs, t, language } = useTheme();
-  const { token } = useContext(AuthContext);
 
   const [hasGroup, setHasGroup] = useState<boolean>(true);
   const [classGroupId, setClassGroupId] = useState<number | null>(null);
@@ -49,9 +47,7 @@ export default function AlbumScreen() {
 
   const loadAlbums = useCallback(async () => {
     try {
-      const groupRes = await api.get("/class-groups/my", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const groupRes = await api.get("/class-groups/my");
 
       const data = groupRes.data;
       let resolvedId: number | null = null;
@@ -72,9 +68,7 @@ export default function AlbumScreen() {
       setHasGroup(true);
       setClassGroupId(resolvedId);
 
-      const albumsRes = await api.get(`/albums/class-group/${resolvedId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const albumsRes = await api.get(`/albums/class-group/${resolvedId}`);
 
       const list = Array.isArray(albumsRes.data) ? albumsRes.data : [];
       setAlbums(list.map((raw) => mapAlbumDto(raw, t.untitledAlbum)));
@@ -93,7 +87,7 @@ export default function AlbumScreen() {
     } finally {
       setLoading(false);
     }
-  }, [token, language]);
+  }, [language]);
 
   useFocusEffect(
     useCallback(() => {
@@ -130,6 +124,8 @@ export default function AlbumScreen() {
           }),
         )
       }
+      accessibilityLabel={`${t.album ?? "Álbum"}: ${item.title}`}
+      accessibilityRole="button"
     >
       <View style={[styles.imageContainer, { backgroundColor: colors.bgSecondary }]}>
         <AlbumCoverImage albumId={item.id} coverPhotoUrl={item.coverPhotoUrl} style={styles.coverImage} />

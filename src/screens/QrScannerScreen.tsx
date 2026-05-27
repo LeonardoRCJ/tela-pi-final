@@ -3,7 +3,7 @@ import {
   CameraView,
   useCameraPermissions,
 } from "expo-camera";
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -15,7 +15,6 @@ import {
 import api from "../services/api";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { AuthContext } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 
 type RootStackParamList = {
@@ -31,7 +30,6 @@ type NavigationProps = NativeStackNavigationProp<RootStackParamList>;
 
 export default function QrScanner() {
   const [permission, requestPermission] = useCameraPermissions();
-  const { token } = useContext(AuthContext);
   const { colors, fs, t } = useTheme();
   const [scanned, setScanned] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -43,11 +41,6 @@ export default function QrScanner() {
       await api.post(
         "/class-groups/join",
         { qrToken },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
       );
       Alert.alert(t.qrSuccessTitle, t.qrSuccessBody);
     } catch (err: any) {
@@ -75,7 +68,7 @@ export default function QrScanner() {
         <Text style={{ marginBottom: 10, color: colors.text, fontSize: fs(16) }}>
           {t.cameraPermission}
         </Text>
-        <Button title={t.allow} onPress={requestPermission} />
+        <Button title={t.allow} onPress={requestPermission} accessibilityLabel={t.allow ?? "Permitir acesso à câmera"} />
       </View>
     );
   }

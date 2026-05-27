@@ -162,6 +162,8 @@ export default function DetalheTurma({ route, navigation }: any) {
             classGroupName,
           })
         }
+        accessibilityLabel={`${t.trainingSession} ${formatDateToBR(item.date)}`}
+        accessibilityRole="button"
       >
         <View style={[styles.cardIcon, { backgroundColor: colors.card }]}>
           <Ionicons name="calendar" size={24} color={colors.accent} />
@@ -176,7 +178,7 @@ export default function DetalheTurma({ route, navigation }: any) {
           </Text>
         </View>
 
-        <TouchableOpacity style={styles.deleteBtn} onPress={() => deleteSession(item.id!)}>
+        <TouchableOpacity style={styles.deleteBtn} onPress={() => deleteSession(item.id!)} accessibilityLabel={t.deleteSession ?? "Excluir sessão"} accessibilityRole="button">
           <Ionicons name="trash-outline" size={22} color={colors.danger} />
         </TouchableOpacity>
 
@@ -193,10 +195,12 @@ export default function DetalheTurma({ route, navigation }: any) {
   return (
     <SafeAreaView style={[styles.root, { backgroundColor: colors.bg }]}>
       <View style={[styles.header, { borderBottomColor: colors.cardBorder }]}>
-        <TouchableOpacity
-          style={[styles.backBtn, { backgroundColor: colors.card }]}
-          onPress={() => navigation.goBack()}
-        >
+      <TouchableOpacity
+        style={[styles.backBtn, { backgroundColor: colors.card }]}
+        onPress={() => navigation.goBack()}
+        accessibilityLabel={t.back ?? "Voltar"}
+        accessibilityRole="button"
+      >
           <Ionicons name="chevron-back" size={22} color={colors.accent} />
         </TouchableOpacity>
 
@@ -212,6 +216,8 @@ export default function DetalheTurma({ route, navigation }: any) {
         <TouchableOpacity
           style={[styles.addBtn, { backgroundColor: colors.accent }]}
           onPress={openCreate}
+          accessibilityLabel={t.newTrainingSession ?? "Nova sessão de treino"}
+          accessibilityRole="button"
         >
           <Ionicons name="add" size={24} color={colors.accentForeground} />
         </TouchableOpacity>
@@ -232,24 +238,26 @@ export default function DetalheTurma({ route, navigation }: any) {
         }
         contentContainerStyle={styles.listContainer}
         ListHeaderComponent={
-          <TouchableOpacity
-            style={[
-              styles.albumsCta,
-              {
-                backgroundColor: colors.bgSecondary,
-                borderColor: colors.cardBorder,
-              },
-            ]}
-            activeOpacity={0.85}
-            onPress={() =>
-              navigation.dispatch(
-                CommonActions.navigate("MasterAlbums", {
-                  classGroupId,
-                  classGroupName,
-                }),
-              )
-            }
-          >
+            <TouchableOpacity
+              style={[
+                styles.albumsCta,
+                {
+                  backgroundColor: colors.bgSecondary,
+                  borderColor: colors.cardBorder,
+                },
+              ]}
+              activeOpacity={0.85}
+              onPress={() =>
+                navigation.dispatch(
+                  CommonActions.navigate("MasterAlbums", {
+                    classGroupId,
+                    classGroupName,
+                  }),
+                )
+              }
+              accessibilityLabel={t.albumsSection}
+              accessibilityRole="button"
+            >
             <View style={[styles.albumsCtaIcon, { backgroundColor: colors.accent }]}>
               <Ionicons name="images" size={22} color={colors.accentForeground} />
             </View>
@@ -303,6 +311,8 @@ export default function DetalheTurma({ route, navigation }: any) {
                 },
               ]}
               onPress={() => setShowDatePicker(true)}
+              accessibilityLabel={t.trainingDateLabel ?? "Selecionar data"}
+              accessibilityRole="button"
             >
               <Ionicons name="calendar" size={20} color={colors.accent} />
               <Text style={[styles.dateSelectorText, { color: colors.text, fontSize: fs(16) }]}>
@@ -329,6 +339,8 @@ export default function DetalheTurma({ route, navigation }: any) {
                   { backgroundColor: colors.inputBg, borderColor: colors.cardBorder },
                 ]}
                 onPress={closeModal}
+                accessibilityLabel={t.cancel}
+                accessibilityRole="button"
               >
                 <Text style={[styles.cancelText, { color: colors.textMuted }]}>{t.cancel}</Text>
               </Pressable>
@@ -336,6 +348,8 @@ export default function DetalheTurma({ route, navigation }: any) {
               <Pressable
                 style={[styles.saveBtn, { backgroundColor: colors.accent }]}
                 onPress={createTrainingSession}
+                accessibilityLabel={t.create ?? "Criar sessão"}
+                accessibilityRole="button"
               >
                 <Text style={[styles.saveText, { color: colors.accentForeground }]}>{t.create}</Text>
               </Pressable>

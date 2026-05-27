@@ -1,29 +1,29 @@
-import React, { useContext, useRef, useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  Pressable,
-  KeyboardAvoidingView,
-  Platform,
-  ActivityIndicator,
-  Animated,
-  TouchableOpacity,
-  Dimensions,
-  ScrollView,
-} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import React, { useContext, useRef, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import {
+    ActivityIndicator,
+    Animated,
+    Dimensions,
+    KeyboardAvoidingView,
+    Platform,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { AuthContext } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
-import { signInSchema } from "../zod/schemas";
 import api from "../services/api";
+import { signInSchema } from "../zod/schemas";
 
 const { height: windowHeight } = Dimensions.get("window");
 
@@ -185,6 +185,7 @@ export default function Login() {
                   onChangeText={onChange}
                   autoCapitalize="none"
                   error={errors.email?.message?.toString()}
+                  accessibilityLabel={t.emailPlaceholder}
                 />
               )}
             />
@@ -200,6 +201,7 @@ export default function Login() {
                   value={value}
                   onChangeText={onChange}
                   error={errors.password?.message?.toString()}
+                  accessibilityLabel={t.passwordPlaceholder}
                 />
               )}
             />
@@ -214,6 +216,8 @@ export default function Login() {
                 onPressIn={() => animate(0.97)}
                 onPressOut={() => animate(1)}
                 onPress={handleSubmit(onSubmit)}
+                accessibilityLabel={t.signInCta}
+                accessibilityRole="button"
               >
                 {loading ? (
                   <ActivityIndicator color={colors.accentForeground} />
@@ -228,7 +232,7 @@ export default function Login() {
               </Pressable>
             </Animated.View>
 
-            <TouchableOpacity style={styles.register}>
+            <TouchableOpacity style={styles.register} accessibilityLabel={t.signUpLink} accessibilityRole="button">
               <Text style={[styles.registerText, { color: colors.textMuted }]}>
                 {t.noAccountPrompt}{" "}
                 <Text

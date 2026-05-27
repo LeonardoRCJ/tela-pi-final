@@ -1,37 +1,35 @@
-import React, {
-  useState,
-  useContext,
-  useEffect,
-  useCallback,
-} from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  TouchableOpacity,
-  Modal,
-  KeyboardAvoidingView,
-  Platform,
-  TextInput,
-  RefreshControl,
-} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import {
-  CommonActions,
-  useNavigation,
+    CommonActions,
+    useNavigation,
 } from "@react-navigation/native";
-import Toast from "react-native-toast-message";
+import React, {
+    useCallback,
+    useContext,
+    useEffect,
+    useState,
+} from "react";
+import {
+    FlatList,
+    KeyboardAvoidingView,
+    Modal,
+    Platform,
+    RefreshControl,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
+} from "react-native";
 import QRCode from "react-native-qrcode-svg";
+import Toast from "react-native-toast-message";
 
-import api from "../services/api";
-import { AuthContext } from "../context/AuthContext";
 import { ThemeContext } from "../context/ThemeContext";
 import { SimpleClassGroup } from "../interfaces/classgroup";
+import api from "../services/api";
 
 export default function ClassGroups() {
   const navigation = useNavigation<any>();
-  const { token } = useContext(AuthContext);
 
   const {
     colors,
@@ -73,11 +71,14 @@ export default function ClassGroups() {
 
   async function getClassGroups() {
     try {
-      const response =
-        await api.get("/class-groups");
+      const response = await api.get("/class-groups");
 
       setClassGroups(response.data);
-    } catch {}
+    } catch(error:any) {
+      console.log('====================================');
+      console.log(error);
+      console.log('====================================');
+    }
   }
 
   useEffect(() => {
@@ -137,9 +138,6 @@ export default function ClassGroups() {
           null,
           {
             params: { name },
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
           },
         );
 
@@ -224,6 +222,8 @@ export default function ClassGroups() {
             ),
           )
         }
+        accessibilityLabel={`${t.myClasses}: ${item.name}`}
+        accessibilityRole="button"
       >
         <View style={styles.row}>
           <View
@@ -288,6 +288,8 @@ export default function ClassGroups() {
             onPress={() =>
               openQr(item)
             }
+            accessibilityLabel={`${t.qrCode ?? "QR Code"} ${item.name}`}
+            accessibilityRole="button"
           >
             <Ionicons
               name="qr-code-outline"
@@ -306,6 +308,8 @@ export default function ClassGroups() {
             onPress={() =>
               openEdit(item)
             }
+            accessibilityLabel={`${t.editClass ?? "Editar"} ${item.name}`}
+            accessibilityRole="button"
           >
             <Ionicons
               name="create-outline"
@@ -324,6 +328,8 @@ export default function ClassGroups() {
             onPress={() =>
               openDelete(item)
             }
+            accessibilityLabel={`${t.deleteClass ?? "Excluir"} ${item.name}`}
+            accessibilityRole="button"
           >
             <Ionicons
               name="trash-outline"
@@ -421,6 +427,8 @@ export default function ClassGroups() {
           },
         ]}
         onPress={openCreate}
+        accessibilityLabel={t.newClass ?? "Nova turma"}
+        accessibilityRole="button"
       >
         <Ionicons
           name="add"
@@ -491,6 +499,7 @@ export default function ClassGroups() {
                     colors.text,
                 },
               ]}
+              accessibilityLabel={t.classNamePlaceholder ?? "Nome da turma"}
             />
 
             <View
@@ -502,6 +511,8 @@ export default function ClassGroups() {
                 onPress={
                   closeModal
                 }
+                accessibilityLabel={t.cancel}
+                accessibilityRole="button"
               >
                 <Text
                   style={{
@@ -524,6 +535,8 @@ export default function ClassGroups() {
                   },
                 ]}
                 onPress={save}
+                accessibilityLabel={t.save ?? "Salvar"}
+                accessibilityRole="button"
               >
                 <Text
                   style={{
@@ -617,6 +630,8 @@ export default function ClassGroups() {
                     false,
                   )
                 }
+                accessibilityLabel={t.cancel}
+                accessibilityRole="button"
               >
                 <Text
                   style={{
@@ -643,6 +658,8 @@ export default function ClassGroups() {
                     selectedDelete?.id!,
                   )
                 }
+                accessibilityLabel={`${t.delete ?? "Excluir"} ${selectedDelete?.name ?? ""}`}
+                accessibilityRole="button"
               >
                 <Text
                   style={{
@@ -717,6 +734,8 @@ export default function ClassGroups() {
                   false,
                 )
               }
+              accessibilityLabel={t.close ?? "Fechar"}
+              accessibilityRole="button"
             >
               <Text
                 style={{

@@ -3,18 +3,18 @@ import { useNavigation } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
 import React, { useContext, useEffect, useState } from "react";
 import {
-  ActivityIndicator,
-  Image,
-  KeyboardAvoidingView,
-  Modal,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Switch,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View
+    ActivityIndicator,
+    Image,
+    KeyboardAvoidingView,
+    Modal,
+    Platform,
+    ScrollView,
+    StyleSheet,
+    Switch,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View
 } from "react-native";
 
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
@@ -37,7 +37,7 @@ export type RootStackParamList = {
 
 type NavigationProps = NativeStackNavigationProp<RootStackParamList>;
 
-export default function PerfilProfessor() {
+export default function Profile() {
   const navigation = useNavigation<NavigationProps>();
 
   const {
@@ -55,7 +55,7 @@ export default function PerfilProfessor() {
     tc
   } = useContext(ThemeContext);
 
-  const { token, logout, isMaster, user } = useContext(AuthContext);
+  const { logout, isMaster, user } = useContext(AuthContext);
 
   const [userSelected, setSelectedUser] = useState<User | null>(null);
   const [openLogoutDialog, setOpenLogoutDialog] = useState<boolean>(false);
@@ -70,15 +70,11 @@ export default function PerfilProfessor() {
 
   async function getUserProfile() {
     try {
-      const response = await api.get("/users/profile", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await api.get("/users/profile");
 
       setSelectedUser(response.data);
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      console.log(error?.response?.data?.message ?? error?.message);
     }
   }
 
@@ -102,11 +98,6 @@ export default function PerfilProfessor() {
           name, 
           bio,
         },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
       );
 
       Toast.show({
@@ -158,7 +149,6 @@ export default function PerfilProfessor() {
 
       await api.patch(`/auth/${user?.id}/update-photo`, formData, {
         headers: {
-          Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data"
         },
       });
@@ -221,6 +211,8 @@ export default function PerfilProfessor() {
             <TouchableOpacity
               style={styles.editPhotoBadge}
               onPress={updatePhoto}
+              accessibilityLabel={t.editPhoto ?? "Alterar foto de perfil"}
+              accessibilityRole="button"
             >
               <Ionicons name="camera" size={18} color="#FFF" />
             </TouchableOpacity>
@@ -251,6 +243,8 @@ export default function PerfilProfessor() {
           <TouchableOpacity
             style={styles.editProfileBtn}
             onPress={abrirEdicao}
+            accessibilityLabel={t.editProfile ?? "Editar perfil"}
+            accessibilityRole="button"
           >
             <Ionicons
               name="pencil"
@@ -305,12 +299,15 @@ export default function PerfilProfessor() {
               onValueChange={toggleColorScheme}
               trackColor={{ false: "#767577", true: "#D4AF37" }}
               thumbColor={isDark ? "#FFF" : "#f4f3f4"}
+              accessibilityLabel={t.darkTheme ?? "Tema escuro"}
             />
           </View>
 
           <TouchableOpacity
             style={[styles.settingRow, { backgroundColor: cardColor }]}
             onPress={toggleLanguage}
+            accessibilityLabel={`${t.language ?? "Idioma"}: ${language === "en-US" ? t.portuguese : t.english}`}
+            accessibilityRole="button"
           >
             <View style={styles.settingIconText}>
               <View style={[styles.iconBox, { backgroundColor: "#2D5AA0" }]}>
@@ -371,6 +368,7 @@ export default function PerfilProfessor() {
               onValueChange={toggleLargeFonts}
               trackColor={{ false: "#767577", true: "#D4AF37" }}
               thumbColor={largeFonts ? "#FFF" : "#f4f3f4"}
+              accessibilityLabel={t.largeFonts ?? "Fontes grandes"}
             />
           </View>
 
@@ -395,6 +393,7 @@ export default function PerfilProfessor() {
               onValueChange={toggleHighContrast}
               trackColor={{ false: "#767577", true: "#D4AF37" }}
               thumbColor={highContrast ? "#FFF" : "#f4f3f4"}
+              accessibilityLabel={t.highContrast ?? "Alto contraste"}
             />
           </View>
         </View>
@@ -404,6 +403,8 @@ export default function PerfilProfessor() {
           <TouchableOpacity
             style={styles.logoutButton}
             onPress={handleLogout}
+            accessibilityLabel={t.logout ?? "Sair"}
+            accessibilityRole="button"
           >
             <Ionicons
               name="log-out"
@@ -457,6 +458,7 @@ export default function PerfilProfessor() {
                   color: textColor,
                 },
               ]}
+              accessibilityLabel="Nome"
             />
 
             <TextInput
@@ -473,11 +475,14 @@ export default function PerfilProfessor() {
                   height: 100,
                 },
               ]}
+              accessibilityLabel="Bio"
             />
 
             <TouchableOpacity
               style={styles.saveModalBtn}
               onPress={saveProfile}
+              accessibilityLabel="Salvar perfil"
+              accessibilityRole="button"
             >
               {savingProfile ? (
                 <ActivityIndicator color="#000" />
@@ -489,6 +494,8 @@ export default function PerfilProfessor() {
             <TouchableOpacity
               onPress={() => setModalVisible(false)}
               style={{ marginTop: 15, alignItems: 'center' }}
+              accessibilityLabel={t.cancel ?? "Cancelar"}
+              accessibilityRole="button"
             >
               <Text style={{ color: "#FF4444" }}>Cancelar</Text>
             </TouchableOpacity>

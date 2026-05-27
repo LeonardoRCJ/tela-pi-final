@@ -161,6 +161,7 @@ export default function Cadastro() {
                 placeholder={t.namePlaceholder}
                 value={name}
                 onChangeText={setName}
+                accessibilityLabel={t.namePlaceholder}
               />
               <Input
                 icon="mail-outline"
@@ -169,6 +170,7 @@ export default function Cadastro() {
                 autoCapitalize="none"
                 value={email}
                 onChangeText={setEmail}
+                accessibilityLabel="E-mail"
               />
               <Input
                 icon="lock-closed-outline"
@@ -176,6 +178,7 @@ export default function Cadastro() {
                 secureTextEntry
                 value={password}
                 onChangeText={setPassword}
+                accessibilityLabel={t.passwordPlaceholder}
               />
               <Input
                 icon="lock-closed-outline"
@@ -183,6 +186,7 @@ export default function Cadastro() {
                 secureTextEntry
                 value={confirmPassword}
                 onChangeText={setConfirmPassword}
+                accessibilityLabel={t.confirmPasswordPlaceholder}
               />
             </View>
 
@@ -191,6 +195,9 @@ export default function Cadastro() {
               style={styles.termsRow}
               onPress={() => setTermsAccepted((v) => !v)}
               activeOpacity={0.7}
+              accessibilityLabel={(t as any).termsPrompt ?? "Aceitar termos de uso"}
+              accessibilityRole="checkbox"
+              accessibilityState={{ checked: termsAccepted }}
             >
               <View
                 style={[
@@ -228,6 +235,8 @@ export default function Cadastro() {
                 onPressIn={() => animate(0.97)}
                 onPressOut={() => animate(1)}
                 onPress={handleRegister}
+                accessibilityLabel={t.registerCta}
+                accessibilityRole="button"
               >
                 {loading ? (
                   <ActivityIndicator color="#fff" />
@@ -243,7 +252,7 @@ export default function Cadastro() {
             </Animated.View>
           </View>
 
-          <TouchableOpacity style={styles.linkWrap} onPress={() => navigation.goBack()}>
+          <TouchableOpacity style={styles.linkWrap} onPress={() => navigation.goBack()} accessibilityLabel={t.signInLink} accessibilityRole="button">
             <Text style={[styles.link, { color: colors.textMuted, fontSize: fs(12) }]}>
               {t.haveAccountPrompt}{" "}
             </Text>

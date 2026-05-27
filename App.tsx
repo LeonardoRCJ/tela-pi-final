@@ -21,7 +21,7 @@ import Login from "./src/screens/Login";
 import MasterAlbumsScreen from "./src/screens/MasterAlbumsScreen";
 import PractitionerClassGroupDetail from "./src/screens/PractitionerClassGroupDetail";
 import PractitionerClassGroups from "./src/screens/PractitionerClassGroupsScreen";
-import PerfilProfessor from "./src/screens/Profile";
+import Profile from "./src/screens/Profile";
 import Cadastro from "./src/screens/SignUp";
 import TrainingSessionDetail from "./src/screens/TrainingSessionDetail";
 
@@ -81,7 +81,7 @@ const { fs, colors } = useTheme();
       />
       <Tab.Screen
         name={t.profileTitle}
-        component={PerfilProfessor}
+        component={Profile}
         options={{
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="person" size={fs(size)} color={color} />
@@ -128,7 +128,7 @@ function PractitionerTabs() {
       />
       <Tab.Screen
         name= { t.profileTitle }
-        component={PerfilProfessor}
+        component={Profile}
         options={{
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="person" size={size} color={color} />

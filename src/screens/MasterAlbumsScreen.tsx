@@ -1,25 +1,25 @@
 import { Ionicons } from "@expo/vector-icons";
 import {
-  CommonActions,
-  useFocusEffect,
-  useNavigation,
-  useRoute,
+    CommonActions,
+    useFocusEffect,
+    useNavigation,
+    useRoute,
 } from "@react-navigation/native";
 import React, { useCallback, useContext, useState } from "react";
 import {
-  ActivityIndicator,
-  Alert,
-  FlatList,
-  KeyboardAvoidingView,
-  Modal,
-  Platform,
-  Pressable,
-  RefreshControl,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    Alert,
+    FlatList,
+    KeyboardAvoidingView,
+    Modal,
+    Platform,
+    Pressable,
+    RefreshControl,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
@@ -53,8 +53,7 @@ export default function MasterAlbumsScreen() {
   const route = useRoute<any>();
   const { classGroupId, classGroupName } = route.params;
   const { colors, fs, t, language } = useTheme();
-  const { token, isMaster } = useContext(AuthContext) as {
-    token: string | null;
+  const { isMaster } = useContext(AuthContext) as {
     isMaster?: boolean;
   };
 
@@ -68,9 +67,7 @@ export default function MasterAlbumsScreen() {
 
   const loadAlbums = useCallback(async () => {
     try {
-      const { data } = await api.get(`/albums/class-group/${classGroupId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const { data } = await api.get(`/albums/class-group/${classGroupId}`);
       const list = Array.isArray(data) ? data : [];
       setAlbums(list.map((raw) => mapAlbumDto(raw, t.untitledAlbum)));
     } catch (err: any) {
@@ -83,7 +80,7 @@ export default function MasterAlbumsScreen() {
     } finally {
       setLoading(false);
     }
-  }, [classGroupId, token, language]);
+  }, [classGroupId, language]);
 
   useFocusEffect(
     useCallback(() => {
@@ -113,7 +110,6 @@ export default function MasterAlbumsScreen() {
       await api.post(
         `/albums`,
         { name: albumTitle.trim(), classGroupId },
-        { headers: { Authorization: `Bearer ${token}` } },
       );
 
       Toast.show({
@@ -154,9 +150,7 @@ export default function MasterAlbumsScreen() {
   const deleteAlbumById = async (id: number) => {
     setDeletingAlbumId(id);
     try {
-      await api.delete(`/albums/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await api.delete(`/albums/${id}`);
       Toast.show({
         type: "success",
         text1: t.albumRemovedTitle,
@@ -196,6 +190,8 @@ export default function MasterAlbumsScreen() {
           }),
         )
       }
+      accessibilityLabel={`${t.album ?? "Álbum"}: ${item.title}`}
+      accessibilityRole="button"
     >
       <View style={[styles.imageContainer, { backgroundColor: colors.bg }]}>
         <AlbumCoverImage albumId={item.id} coverPhotoUrl={item.coverPhotoUrl} style={styles.coverImage} />
@@ -206,6 +202,8 @@ export default function MasterAlbumsScreen() {
             onPress={() => confirmDeleteAlbum(item)}
             disabled={deletingAlbumId === item.id}
             hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
+            accessibilityLabel={`${t.deleteAlbumTitle ?? "Excluir álbum"} ${item.title}`}
+            accessibilityRole="button"
           >
             {deletingAlbumId === item.id ? (
               <ActivityIndicator size="small" color={colors.danger} />
@@ -233,6 +231,8 @@ export default function MasterAlbumsScreen() {
         <TouchableOpacity
           style={[styles.backBtn, { backgroundColor: colors.card }]}
           onPress={() => navigation.goBack()}
+          accessibilityLabel={t.back ?? "Voltar"}
+          accessibilityRole="button"
         >
           <Ionicons name="chevron-back" size={22} color={colors.accent} />
         </TouchableOpacity>
@@ -247,6 +247,8 @@ export default function MasterAlbumsScreen() {
         <TouchableOpacity
           style={[styles.addBtn, { backgroundColor: colors.accent }]}
           onPress={() => setModalVisible(true)}
+          accessibilityLabel={t.newAlbum ?? "Novo álbum"}
+          accessibilityRole="button"
         >
           <Ionicons name="add" size={24} color={colors.accentForeground} />
         </TouchableOpacity>
@@ -308,6 +310,7 @@ export default function MasterAlbumsScreen() {
               placeholderTextColor={colors.textMuted}
               value={albumTitle}
               onChangeText={setAlbumTitle}
+              accessibilityLabel={t.albumTitleLabel ?? "Título do álbum"}
             />
 
             <View style={styles.modalRow}>
@@ -318,6 +321,8 @@ export default function MasterAlbumsScreen() {
                 ]}
                 onPress={closeModal}
                 disabled={creating}
+                accessibilityLabel={t.cancel}
+                accessibilityRole="button"
               >
                 <Text style={[styles.cancelText, { color: colors.textMuted }]}>{t.cancel}</Text>
               </Pressable>
@@ -326,6 +331,8 @@ export default function MasterAlbumsScreen() {
                 style={[styles.saveBtn, { backgroundColor: colors.accent }]}
                 onPress={handleCreateAlbum}
                 disabled={creating}
+                accessibilityLabel={t.create ?? "Criar álbum"}
+                accessibilityRole="button"
               >
                 {creating ? (
                   <ActivityIndicator color={colors.accentForeground} />

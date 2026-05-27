@@ -3,7 +3,21 @@ import axios from "axios";
 import { invalidateSession } from "./authSession";
 
 const api = axios.create({
-  baseURL: "http://192.168.15.6:8083/api/v1",
+  baseURL: "http://192.168.0.93:8083/api/v1",
+});
+
+let _authToken: string | null = null;
+
+export function setAuthToken(token: string | null) {
+  _authToken = token;
+}
+
+api.interceptors.request.use((config) => {
+  if (_authToken) {
+    config.headers = config.headers ?? {};
+    config.headers.Authorization = `Bearer ${_authToken}`;
+  }
+  return config;
 });
 
 api.interceptors.response.use(

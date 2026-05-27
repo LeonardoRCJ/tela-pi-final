@@ -1,20 +1,20 @@
-import React, { useContext, useEffect, useState } from "react";
-import {
-  ActivityIndicator,
-  Keyboard,
-  KeyboardAvoidingView,
-  Platform,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View,
-} from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import React, { useContext, useEffect, useState } from "react";
+import {
+    ActivityIndicator,
+    Keyboard,
+    KeyboardAvoidingView,
+    Platform,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import { AuthContext } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
@@ -65,6 +65,7 @@ export default function JoinClassGroup() {
             <TouchableOpacity
               style={[styles.scanButton, { backgroundColor: colors.accent }]}
               onPress={openScanner}
+              accessibilityLabel={"Abrir QR CODE scanner"}
             >
               <Ionicons name="qr-code" size={34} color={colors.accentForeground} />
               <Text style={[styles.scanText, { color: colors.accentForeground, fontSize: fs(15) }]}>
@@ -94,6 +95,7 @@ export default function JoinClassGroup() {
             <TouchableOpacity
               style={[styles.joinButton, { backgroundColor: colors.accent }]}
               disabled={loading}
+              accessibilityLabel="Botão de entrar na turma."
             >
               {loading ? (
                 <ActivityIndicator color={colors.accentForeground} />

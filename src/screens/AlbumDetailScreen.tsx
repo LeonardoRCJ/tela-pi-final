@@ -65,8 +65,7 @@ export default function AlbumDetailScreen() {
 
   const albumId = params?.albumId;
   const albumTitle = params?.albumTitle ?? t.album;
-  const { token, isMaster } = useContext(AuthContext) as {
-    token: string | null;
+  const { isMaster } = useContext(AuthContext) as {
     isMaster?: boolean;
   };
 
@@ -92,9 +91,7 @@ export default function AlbumDetailScreen() {
   const loadPhotos = useCallback(async () => {
     if (albumId == null) return;
     try {
-      const { data } = await api.get(`/albums/${albumId}/photos`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-      });
+      const { data } = await api.get(`/albums/${albumId}/photos`);
       const list = Array.isArray(data) ? data : [];
       const mapped = list
         .map(mapPhotoDto)
@@ -110,7 +107,7 @@ export default function AlbumDetailScreen() {
     } finally {
       setLoading(false);
     }
-  }, [albumId, token, t]);
+  }, [albumId, t]);
 
   useFocusEffect(
     useCallback(() => {
@@ -165,7 +162,6 @@ export default function AlbumDetailScreen() {
     try {
       await api.post(`/albums/${albumId}/photos`, formData, {
         headers: {
-          Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
         },
       });
@@ -199,9 +195,7 @@ export default function AlbumDetailScreen() {
 
   const deletePhoto = async (photoId: number) => {
     try {
-      await api.delete(`/albums/photos/${photoId}`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-      });
+      await api.delete(`/albums/photos/${photoId}`);
       Toast.show({
         type: "success",
         text1: t.photoRemovedTitle,
@@ -237,9 +231,7 @@ export default function AlbumDetailScreen() {
     if (albumId == null) return;
     setDeletingAlbum(true);
     try {
-      await api.delete(`/albums/${albumId}`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-      });
+      await api.delete(`/albums/${albumId}`);
       Toast.show({
         type: "success",
         text1: t.albumRemovedTitle,
@@ -298,6 +290,8 @@ export default function AlbumDetailScreen() {
         if (isMaster) confirmDeletePhoto(item.id);
       }}
       delayLongPress={500}
+      accessibilityLabel={t.photo ?? "Ver foto"}
+      accessibilityRole="imagebutton"
     >
       <Image source={{ uri: item.uri }} style={styles.photoImage} />
       <View style={styles.photoScrim} pointerEvents="none" />
@@ -311,6 +305,8 @@ export default function AlbumDetailScreen() {
           style={styles.deleteGlass}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           onPress={() => confirmDeletePhoto(item.id)}
+          accessibilityLabel={t.removePhotoTitle ?? "Excluir foto"}
+          accessibilityRole="button"
         >
           <Ionicons name="trash-outline" size={17} color={colors.danger} />
         </TouchableOpacity>
@@ -322,7 +318,7 @@ export default function AlbumDetailScreen() {
     return (
       <SafeAreaView style={styles.root} edges={["top", "left", "right"]}>
         <View style={styles.topBar}>
-          <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
+          <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()} accessibilityLabel={t.back ?? "Voltar"} accessibilityRole="button">
             <Ionicons name="chevron-back" size={22} color={colors.accent} />
           </TouchableOpacity>
           <Text style={[styles.topBarTitle, { fontSize: fs(17) }]}>{t.album}</Text>
@@ -338,7 +334,7 @@ export default function AlbumDetailScreen() {
   return (
     <SafeAreaView style={styles.root} edges={["top", "left", "right"]}>
       <View style={styles.topBar}>
-        <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
+        <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()} accessibilityLabel={t.back ?? "Voltar"} accessibilityRole="button">
           <Ionicons name="chevron-back" size={22} color={colors.accent} />
         </TouchableOpacity>
         <Text style={[styles.topBarTitle, { fontSize: fs(15) }]} numberOfLines={1}>
@@ -414,6 +410,8 @@ export default function AlbumDetailScreen() {
           onPress={pickAndUpload}
           disabled={uploading}
           activeOpacity={0.88}
+          accessibilityLabel={t.tapToSendPhoto ?? "Adicionar foto"}
+          accessibilityRole="button"
         >
           {uploading ? (
             <ActivityIndicator size="small" color={colors.accentForeground} />
@@ -438,6 +436,7 @@ export default function AlbumDetailScreen() {
                 style={styles.modalClosePill}
                 onPress={() => setPreviewUri(null)}
                 activeOpacity={0.85}
+                accessibilityLabel={t.close ?? "Fechar visualização"}
               >
                 <Ionicons name="chevron-down" size={22} color="#FFF" />
                 <Text style={[styles.modalCloseText, { fontSize: fs(14) }]}>

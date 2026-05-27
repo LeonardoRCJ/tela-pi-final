@@ -1,21 +1,21 @@
-import React, { useState, useEffect, useContext, useCallback } from "react";
+import { Ionicons } from "@expo/vector-icons";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  FlatList,
-  RefreshControl,
-  ActivityIndicator,
-  Dimensions,
+    ActivityIndicator,
+    Dimensions,
+    FlatList,
+    RefreshControl,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Ionicons } from "@expo/vector-icons";
 
-import { ThemeContext, useTheme } from "../context/ThemeContext";
 import { AuthContext } from "../context/AuthContext";
-import api from "../services/api";
+import { ThemeContext, useTheme } from "../context/ThemeContext";
 import { Attendances } from "../interfaces/practitioner";
+import api from "../services/api";
 
 const { width } = Dimensions.get("window");
 
@@ -121,7 +121,7 @@ export default function PractitionerClassGroupDetail({
 }: any) {
   const { classGroupId, classGroupName } = route.params;
   const { colors, fs } = useTheme();
-  const { token, user } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
 
   const [classInfo, setClassInfo] = useState<ClassGroupInfo | null>(null);
   const [attendances, setAttendances] = useState<Attendances[]>([]);
@@ -133,14 +133,10 @@ export default function PractitionerClassGroupDetail({
 
   const fetchData = useCallback(async () => {
     try {
-      // Busca info da turma
       const [classRes, attendRes] = await Promise.all([
-        api.get(`/class-groups/${classGroupId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
+        api.get(`/class-groups/${classGroupId}`),
         api.get(
           `/class-groups/${classGroupId}/practitioners/${user?.id}/attendances`,
-          { headers: { Authorization: `Bearer ${token}` } },
         ),
       ]);
 
@@ -154,7 +150,7 @@ export default function PractitionerClassGroupDetail({
     } finally {
       setLoading(false);
     }
-  }, [classGroupId, token, user?.id]);
+  }, [classGroupId, user?.id]);
 
   useEffect(() => {
     fetchData();
@@ -388,6 +384,7 @@ export default function PractitionerClassGroupDetail({
       <TouchableOpacity
         style={[styles.freqBtn, { backgroundColor: colors.accent }]}
         onPress={() => setActiveTab("frequency")}
+        accessibilityLabel="Ver Histórico completo"
       >
         <Ionicons
           name="list-outline"
@@ -447,6 +444,7 @@ export default function PractitionerClassGroupDetail({
         <TouchableOpacity
           onPress={() => navigation.goBack()}
           style={styles.backBtn}
+          accessibilityLabel="Voltar para a tela anterior"
         >
           <Ionicons name="chevron-back" size={26} color={colors.accent} />
         </TouchableOpacity>
@@ -489,6 +487,7 @@ export default function PractitionerClassGroupDetail({
                 styles.tab,
                 active && { borderBottomColor: colors.accent },
               ]}
+              accessibilityLabel=""
               onPress={() => setActiveTab(tab.key)}
             >
               <Ionicons
