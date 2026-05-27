@@ -35,7 +35,7 @@ type RootStackParamList = {
 
 type NavigationProps = NativeStackNavigationProp<RootStackParamList>;
 
-function Input({ icon, error, ...props }: any) {
+function Input({ icon, error, inputRef, ...props }: any) {
   const { colors, fs } = useTheme();
   return (
     <View style={{ marginBottom: error ? 14 : 0 }}>
@@ -55,6 +55,7 @@ function Input({ icon, error, ...props }: any) {
           color={error ? colors.danger : colors.accent}
         />
         <TextInput
+          ref={inputRef}
           placeholderTextColor={colors.textMuted}
           style={[styles.input, { color: colors.text, fontSize: fs(15) }]}
           {...props}
@@ -79,6 +80,8 @@ export default function Login() {
   const [error, setError] = useState("");
 
   const scale = useRef(new Animated.Value(1)).current;
+  const emailInputRef = useRef<TextInput>(null);
+  const passwordInputRef = useRef<TextInput>(null);
 
   const {
     control,
@@ -123,17 +126,18 @@ export default function Login() {
 
       <KeyboardAvoidingView
         style={styles.kav}
-        behavior="padding"
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
         keyboardVerticalOffset={Platform.OS === "ios" ? insets.top : 0}
       >
         <ScrollView
           keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
           showsVerticalScrollIndicator={false}
-          bounces={false}
+          bounces={true}
           contentContainerStyle={[
             styles.scrollContent,
             {
-              minHeight: windowHeight - insets.top - insets.bottom,
+              paddingBottom: 32,
               paddingHorizontal: 24,
             },
           ]}
@@ -179,11 +183,14 @@ export default function Login() {
               name="email"
               render={({ field: { onChange, value } }) => (
                 <Input
+                  inputRef={emailInputRef}
                   icon="mail-outline"
                   placeholder={t.emailPlaceholder}
                   value={value}
                   onChangeText={onChange}
                   autoCapitalize="none"
+                  returnKeyType="next"
+                  onSubmitEditing={() => passwordInputRef.current?.focus()}
                   error={errors.email?.message?.toString()}
                   accessibilityLabel={t.emailPlaceholder}
                 />
@@ -195,11 +202,14 @@ export default function Login() {
               name="password"
               render={({ field: { onChange, value } }) => (
                 <Input
+                  inputRef={passwordInputRef}
                   icon="lock-closed-outline"
                   placeholder={t.passwordPlaceholder}
                   secureTextEntry
                   value={value}
                   onChangeText={onChange}
+                  returnKeyType="done"
+                  onSubmitEditing={handleSubmit(onSubmit)}
                   error={errors.password?.message?.toString()}
                   accessibilityLabel={t.passwordPlaceholder}
                 />

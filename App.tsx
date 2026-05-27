@@ -16,7 +16,7 @@ import AlbumDetailScreen from "./src/screens/AlbumDetailScreen";
 import AlbumScreen from "./src/screens/AlbumScreen";
 import DetalheTurma from "./src/screens/ClassGroupDetail";
 import ClassGroups from "./src/screens/ClassGroups";
-import FrequenciaAluno from "./src/screens/Frequencia";
+import FrequenciaAluno from "./src/screens/Frequency";
 import Login from "./src/screens/Login";
 import MasterAlbumsScreen from "./src/screens/MasterAlbumsScreen";
 import PractitionerClassGroupDetail from "./src/screens/PractitionerClassGroupDetail";
@@ -33,25 +33,25 @@ const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 
-const toastConfig = {
+const getToastConfig = (colors: any) => ({
   success: (props: any) => (
     <BaseToast
       {...props}
-      style={{ borderLeftColor: "#87ff06", backgroundColor: "#1A1A1A" }}
+      style={{ borderLeftColor: colors.success, backgroundColor: colors.card }}
       contentContainerStyle={{ paddingHorizontal: 15 }}
-      text1Style={{ color: "#FFFFFF", fontSize: 16, fontWeight: "bold" }}
-      text2Style={{ color: "#CCCCCC", fontSize: 13 }}
+      text1Style={{ color: colors.text, fontSize: 16, fontWeight: "bold" }}
+      text2Style={{ color: colors.textMuted, fontSize: 13 }}
     />
   ),
   error: (props: any) => (
     <ErrorToast
       {...props}
-      style={{ borderLeftColor: "#FF4444", backgroundColor: "#1A1A1A" }}
-      text1Style={{ color: "#FFF" }}
-      text2Style={{ color: "#CCC" }}
+      style={{ borderLeftColor: colors.danger, backgroundColor: colors.card }}
+      text1Style={{ color: colors.text }}
+      text2Style={{ color: colors.textMuted }}
     />
   ),
-};
+});
 
 function MasterTabs() {
 const { t } = useContext(ThemeContext)
@@ -66,8 +66,8 @@ const { fs, colors } = useTheme();
           borderTopWidth: 0.5,
           borderColor: colors.cardBorder
         },
-        tabBarActiveTintColor: "#D4AF37",
-        tabBarInactiveTintColor: "#666",
+        tabBarActiveTintColor: colors.accent,
+        tabBarInactiveTintColor: colors.textMuted,
       }}
     >
       <Tab.Screen
@@ -100,11 +100,12 @@ function PractitionerTabs() {
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: "#1A1A1A",
-          borderTopWidth: 0,
+          backgroundColor: colors.bg,
+          borderTopWidth: 0.5,
+          borderColor: colors.cardBorder,
         },
-        tabBarActiveTintColor: "#D4AF37",
-        tabBarInactiveTintColor: "#666",
+        tabBarActiveTintColor: colors.accent,
+        tabBarInactiveTintColor: colors.textMuted,
       }}
     >
       <Tab.Screen
@@ -184,14 +185,23 @@ function AppRoutes() {
   );
 }
 
+function AppContent() {
+  const { colors } = useTheme();
+  return (
+    <>
+      <AppRoutes />
+      <PortalHost />
+      <Toast config={getToastConfig(colors)} />
+    </>
+  );
+}
+
 export default function App() {
   return (
     <SafeAreaProvider>
       <AuthProvider>
         <ThemeProvider>
-          <AppRoutes />
-          <PortalHost />
-          <Toast config={toastConfig} />
+          <AppContent />
         </ThemeProvider>
       </AuthProvider>
     </SafeAreaProvider>

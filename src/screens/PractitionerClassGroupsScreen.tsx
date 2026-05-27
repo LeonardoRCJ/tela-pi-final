@@ -1,20 +1,20 @@
 import { Ionicons } from "@expo/vector-icons";
 import {
-  CommonActions,
-  useFocusEffect,
-  useNavigation,
+    CommonActions,
+    useFocusEffect,
+    useNavigation,
 } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import React, { useCallback, useContext, useState } from "react";
 import {
-  ActivityIndicator,
-  Alert,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    Alert,
+    RefreshControl,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -66,7 +66,6 @@ export default function PractitionerClassGroups() {
         setClassGroup(data ?? null);
       }
 
-      console.log(response.data);
     } catch (err: any) {
       const status = err?.response?.status;
       // 404 significa que o praticante não está em nenhuma turma
@@ -130,19 +129,19 @@ export default function PractitionerClassGroups() {
 
   if (isLoading && !refreshing) {
     return (
-      <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
-        <View style={[styles.header, { borderBottomColor: colors.cardBorder}]}>
+      <SafeAreaView style={[styles.container, { backgroundColor: colors.bg }]} edges={["top", "left", "right"]}>
+        <View style={[styles.header, { borderBottomColor: colors.cardBorder, backgroundColor: colors.bgSecondary }]}>
           <View>
-            <Text style={[styles.headerTitle, { fontSize: fs(24) }]}>
+            <Text style={[styles.headerTitle, { fontSize: fs(24), color: colors.text }]}>
               { t.myClass }
             </Text>
-            <Text style={[styles.headerSubtitle, { fontSize: fs(12) }]}>
+            <Text style={[styles.headerSubtitle, { fontSize: fs(12), color: colors.accent }]}>
               { t.myClassSubtitle }
             </Text>
           </View>
         </View>
         <View style={styles.centerContainer}>
-          <ActivityIndicator size="large" color="#D4AF37" />
+          <ActivityIndicator size="large" color={colors.accent} />
         </View>
       </SafeAreaView>
     );
@@ -154,13 +153,13 @@ export default function PractitionerClassGroups() {
 
   if (!classGroup) {
     return (
-      <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
-        <View style={styles.header}>
+      <SafeAreaView style={[styles.container, { backgroundColor: colors.bg }]} edges={["top", "left", "right"]}>
+        <View style={[styles.header, { backgroundColor: colors.bgSecondary, borderBottomColor: colors.cardBorder }]}>
           <View>
             <Text style={[styles.headerTitle, { fontSize: fs(24), color: colors.text }]}>
               { t.myClass }
             </Text>
-            <Text style={[styles.headerSubtitle, { fontSize: fs(12) }]}>
+            <Text style={[styles.headerSubtitle, { fontSize: fs(12), color: colors.accent }]}>
               {
                 t.myClassSubtitle
               }
@@ -174,26 +173,26 @@ export default function PractitionerClassGroups() {
             <RefreshControl
               refreshing={refreshing}
               onRefresh={onRefresh}
-              tintColor="#D4AF37"
-              colors={["#D4AF37"]}
+              tintColor={colors.accent}
+              colors={[colors.accent]}
             />
           }
         >
           <View style={[styles.emptyContainer, { backgroundColor: colors.bg}]}>
-            <View style={styles.emptyIconWrapper}>
-              <Ionicons name="school-outline" size={52} color="#D4AF37" />
+            <View style={[styles.emptyIconWrapper, { backgroundColor: colors.card, borderColor: colors.cardBorder }]}>
+              <Ionicons name="school-outline" size={52} color={colors.accent} />
             </View>
 
-            <Text style={[styles.emptyTitle, { fontSize: fs(20) }]}>
+            <Text style={[styles.emptyTitle, { fontSize: fs(20), color: colors.text }]}>
               Você não está em{"\n"}nenhuma turma
             </Text>
 
-            <Text style={[styles.emptySubtitle, { fontSize: fs(14) }]}>
+            <Text style={[styles.emptySubtitle, { fontSize: fs(14), color: colors.textMuted }]}>
               Peça ao seu professor o{"\n"}QR Code para entrar.
             </Text>
 
             <TouchableOpacity
-              style={styles.scanButton}
+              style={[styles.scanButton, { backgroundColor: colors.accent }]}
               activeOpacity={0.85}
               onPress={() => navigation.navigate("QrScanner")}
               accessibilityLabel="Escanear QR Code"
@@ -202,10 +201,10 @@ export default function PractitionerClassGroups() {
               <Ionicons
                 name="qr-code-outline"
                 size={22}
-                color="#0F0F0F"
+                color={colors.accentForeground}
                 style={{ marginRight: 10 }}
               />
-              <Text style={[styles.scanButtonText, { fontSize: fs(15) }]}>
+              <Text style={[styles.scanButtonText, { fontSize: fs(15), color: colors.accentForeground }]}>
                 Escanear QR Code
               </Text>
             </TouchableOpacity>
@@ -219,7 +218,7 @@ export default function PractitionerClassGroups() {
               accessibilityLabel="Digitar código manualmente"
               accessibilityRole="button"
             >
-              <Text style={[styles.codeButtonText, { fontSize: fs(14) }]}>
+              <Text style={[styles.codeButtonText, { fontSize: fs(14), color: colors.textMuted }]}>
                 Digitar código manualmente
               </Text>
             </TouchableOpacity>
@@ -234,14 +233,14 @@ export default function PractitionerClassGroups() {
   ========================= */
 
   return (
-    <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.bg }]} edges={["top", "left", "right"]}>
       {/* HEADER */}
-      <View style={[styles.header, { backgroundColor: colors.bgSecondary}]}>
+      <View style={[styles.header, { backgroundColor: colors.bgSecondary, borderBottomColor: colors.cardBorder }]}>
         <View>
           <Text style={[styles.headerTitle, { fontSize: fs(24), color: colors.text }]}>
             {t.myClass}
           </Text>
-          <Text style={[styles.headerSubtitle, { fontSize: fs(12), color: colors.textMuted }]}>
+          <Text style={[styles.headerSubtitle, { fontSize: fs(12), color: colors.accent }]}>
             { t.myClassSubtitle }
           </Text>
         </View>
@@ -253,20 +252,20 @@ export default function PractitionerClassGroups() {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor="#D4AF37"
-            colors={["#D4AF37"]}
+            tintColor={colors.accent}
+            colors={[colors.accent]}
           />
         }
       >
         {/* CARD DA TURMA */}
-        <View style={[styles.classCard, { backgroundColor: colors.card, borderColor: colors.cardBorder}]}>
+        <View style={[styles.classCard, { backgroundColor: colors.card, borderLeftColor: colors.accent, borderColor: colors.cardBorder}]}>
           <View style={styles.classCardIconRow}>
             <View style={[styles.classIconBox, { backgroundColor: colors.bgSecondary}]}>
-              <Ionicons name="people" size={28} color="#D4AF37" />
+              <Ionicons name="people" size={28} color={colors.accent} />
             </View>
 
-            <View style={[styles.classCardBadge, { backgroundColor: colors.accent }]}>
-              <Text style={[styles.badgeText, { fontSize: fs(11), color: colors.text }]}>
+            <View style={[styles.classCardBadge, { backgroundColor: colors.accent + "20", borderColor: colors.accent + "50" }]}>
+              <Text style={[styles.badgeText, { fontSize: fs(11), color: colors.accent }]}>
                 { t.enrolled }
               </Text>
             </View>
@@ -276,7 +275,7 @@ export default function PractitionerClassGroups() {
             {classGroup.name}
           </Text>
 
-          <View style={[styles.divider, { borderColor: colors.cardBorder}]} />
+          <View style={[styles.divider, { borderColor: colors.cardBorder, backgroundColor: colors.cardBorder }]} />
 
           <View style={styles.infoRow}>
             <Ionicons name="person-outline" size={16} color={colors.text} />
@@ -290,7 +289,7 @@ export default function PractitionerClassGroups() {
 
         {/* BOTÃO DETALHES */}
         <TouchableOpacity
-          style={styles.detailsButton}
+          style={[styles.detailsButton, { backgroundColor: colors.accent }]}
           activeOpacity={0.85}
           onPress={() =>
             navigation.dispatch(
@@ -306,17 +305,17 @@ export default function PractitionerClassGroups() {
           <Ionicons
             name="stats-chart-outline"
             size={20}
-            color="#0F0F0F"
+            color={colors.accentForeground}
             style={{ marginRight: 10 }}
           />
-          <Text style={[styles.detailsButtonText, { fontSize: fs(15) }]}>
+          <Text style={[styles.detailsButtonText, { fontSize: fs(15), color: colors.accentForeground }]}>
             { t.myFrequency}
           </Text>
         </TouchableOpacity>
 
         {/* BOTÃO SAIR */}
         <TouchableOpacity
-          style={styles.leaveButton}
+          style={[styles.leaveButton, { backgroundColor: colors.danger + "15", borderColor: colors.danger + "30" }]}
           activeOpacity={0.7}
           onPress={handleLeave}
           accessibilityLabel={t.leaveClassTitle ?? "Sair da turma"}
@@ -325,10 +324,10 @@ export default function PractitionerClassGroups() {
           <Ionicons
             name="exit-outline"
             size={20}
-            color="#FF4444"
+            color={colors.danger}
             style={{ marginRight: 10 }}
           />
-          <Text style={[styles.leaveButtonText, { fontSize: fs(15) }]}>
+          <Text style={[styles.leaveButtonText, { fontSize: fs(15), color: colors.danger }]}>
             { t.leaveClassTitle }
           </Text>
         </TouchableOpacity>
@@ -344,7 +343,6 @@ export default function PractitionerClassGroups() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#0F0F0F",
   },
 
   header: {
@@ -352,16 +350,13 @@ const styles = StyleSheet.create({
     paddingTop: 20,
     paddingBottom: 20,
     borderBottomWidth: 1,
-    borderBottomColor: "#1A1A1A",
   },
 
   headerTitle: {
-    color: "#FFF",
     fontWeight: "900",
   },
 
   headerSubtitle: {
-    color: "#D4AF37",
     letterSpacing: 0.5,
     marginTop: 2,
   },
@@ -389,23 +384,19 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 50,
-    backgroundColor: "#1A1A1A",
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 24,
     borderWidth: 1,
-    borderColor: "#2A2A2A",
   },
 
   emptyTitle: {
-    color: "#FFF",
     fontWeight: "bold",
     textAlign: "center",
     lineHeight: 30,
   },
 
   emptySubtitle: {
-    color: "#666",
     textAlign: "center",
     marginTop: 10,
     lineHeight: 22,
@@ -414,7 +405,6 @@ const styles = StyleSheet.create({
   scanButton: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#D4AF37",
     paddingVertical: 16,
     paddingHorizontal: 32,
     borderRadius: 16,
@@ -422,7 +412,6 @@ const styles = StyleSheet.create({
   },
 
   scanButtonText: {
-    color: "#0F0F0F",
     fontWeight: "bold",
   },
 
@@ -432,19 +421,17 @@ const styles = StyleSheet.create({
   },
 
   codeButtonText: {
-    color: "#555",
     textDecorationLine: "underline",
   },
 
   /* CLASS CARD */
 
   classCard: {
-    backgroundColor: "#1A1A1A",
     borderRadius: 20,
     padding: 24,
     borderLeftWidth: 4,
-    borderLeftColor: "#D4AF37",
     marginBottom: 20,
+    borderWidth: 1,
   },
 
   classCardIconRow: {
@@ -458,35 +445,29 @@ const styles = StyleSheet.create({
     width: 52,
     height: 52,
     borderRadius: 14,
-    backgroundColor: "#252525",
     justifyContent: "center",
     alignItems: "center",
   },
 
   classCardBadge: {
-    backgroundColor: "#D4AF3720",
     paddingHorizontal: 12,
     paddingVertical: 4,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: "#D4AF3750",
   },
 
   badgeText: {
-    color: "#D4AF37",
     fontWeight: "bold",
     letterSpacing: 1,
   },
 
   className: {
-    color: "#FFF",
     fontWeight: "900",
     marginBottom: 16,
   },
 
   divider: {
     height: 1,
-    backgroundColor: "#252525",
     marginBottom: 16,
   },
 
@@ -497,7 +478,6 @@ const styles = StyleSheet.create({
   },
 
   infoText: {
-    color: "#666",
   },
 
   /* BUTTONS */
@@ -506,14 +486,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#D4AF37",
     paddingVertical: 16,
     borderRadius: 16,
     marginBottom: 12,
   },
 
   detailsButtonText: {
-    color: "#0F0F0F",
     fontWeight: "bold",
   },
 
@@ -521,15 +499,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#FF444415",
     paddingVertical: 16,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: "#FF444430",
   },
 
   leaveButtonText: {
-    color: "#FF4444",
     fontWeight: "bold",
   },
 });

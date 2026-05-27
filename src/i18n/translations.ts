@@ -219,7 +219,7 @@ export const TRANSLATIONS: Record<Lang, Record<string, string>> = {
     termsBody:
       "Bem-vindo ao CoachPad. Ao usar este aplicativo, você concorda com os seguintes termos:\n\n" +
       "1. USO PERMITIDO\nO CoachPad destina-se exclusivamente a instrutores e praticantes de artes marciais. É proibido o uso para fins ilícitos ou não relacionados à plataforma.\n\n" +
-      "2. DADOS PESSOAIS\nColetamos apenas os dados necessários para o funcionamento do app (nome, e-mail, fotos de perfil e registros de presença). Não vendemos seus dados a terceiros.\n\n" +
+      "2. DADOS PESSOAIS\nColetamos apenas os dados necessários para o funcionamento do app (nome, e-mail, telefone, fotos de perfil e registros de presença). Não vendemos seus dados a terceiros.\n\n" +
       "3. FOTOS E CONTEÚDO\nAo publicar fotos nos álbuns da turma, você declara ter direito de fazê-lo. Imagens que violem privacidade de terceiros serão removidas.\n\n" +
       "4. RESPONSABILIDADES\nO CoachPad não se responsabiliza por lesões ou acidentes ocorridos durante as aulas. A gestão das turmas é de responsabilidade exclusiva do instrutor.\n\n" +
       "5. MODIFICAÇÕES\nEstes termos podem ser atualizados. Notificaremos os usuários sobre mudanças significativas.\n\n" +
@@ -441,7 +441,7 @@ export const TRANSLATIONS: Record<Lang, Record<string, string>> = {
     termsBody:
       "Welcome to CoachPad. By using this app, you agree to the following terms:\n\n" +
       "1. PERMITTED USE\nCoachPad is intended exclusively for martial arts instructors and practitioners. Use for illegal purposes or unrelated to the platform is prohibited.\n\n" +
-      "2. PERSONAL DATA\nWe collect only the data necessary for the app to function (name, email, profile photos, and attendance records). We do not sell your data to third parties.\n\n" +
+      "2. PERSONAL DATA\nWe collect only the data necessary for the app to function (name, email, phone, profile photos, and attendance records). We do not sell your data to third parties.\n\n" +
       "3. PHOTOS AND CONTENT\nBy publishing photos in class albums, you declare that you have the right to do so. Images that violate third-party privacy will be removed.\n\n" +
       "4. RESPONSIBILITIES\nCoachPad is not responsible for injuries or accidents occurring during classes. Class management is the sole responsibility of the instructor.\n\n" +
       "5. MODIFICATIONS\nThese terms may be updated. We will notify users of significant changes.\n\n" +

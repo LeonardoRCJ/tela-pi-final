@@ -49,33 +49,43 @@ export interface ThemeContextData {
 // ─── PALETAS ──────────────────────────────────────────────────────────────────
 
 const DARK: ThemeColors = {
-  bg: "#0F0F0F",
-  bgSecondary: "#141414",
-  card: "#1A1A1A",
-  cardBorder: "#2A2A2A",
+  bg: "#0B0B0B",
+  bgSecondary: "#121212",
+
+  card: "#181818",
+  cardBorder: "#303030",
+
   text: "#FFFFFF",
-  textMuted: "#888888",
-  accent: "#D4AF37",
-  accentForeground: "#0F0F0F",
-  danger: "#FF4444",
-  success: "#2ECC71",
-  warning: "#F1C40F",
-  inputBg: "#252525",
+  textMuted: "#B3B3B3",
+
+  accent: "#E0B84D",
+  accentForeground: "#000000",
+
+  danger: "#FF5C5C",
+  success: "#38D27A",
+  warning: "#FFD447",
+
+  inputBg: "#222222",
 };
 
 const LIGHT: ThemeColors = {
-  bg: "#F5F5F5",
-  bgSecondary: "#EBEBEB",
+  bg: "#FAFAFA",
+  bgSecondary: "#F0F0F0",
+
   card: "#FFFFFF",
-  cardBorder: "#E0E0E0",
+  cardBorder: "#D8D8D8",
+
   text: "#111111",
-  textMuted: "#666666",
-  accent: "#B8962E",
+  textMuted: "#4F4F4F",
+
+  accent: "#9E7B18",
   accentForeground: "#FFFFFF",
-  danger: "#D32F2F",
-  success: "#388E3C",
-  warning: "#F57F17",
-  inputBg: "#E8E8E8",
+
+  danger: "#B3261E",
+  success: "#1B7F3B",
+  warning: "#9A6700",
+
+  inputBg: "#ECECEC",
 };
 
 // ─── STORAGE KEYS ─────────────────────────────────────────────────────────────

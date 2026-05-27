@@ -147,7 +147,7 @@ export default function Profile() {
 
       setLoadingPhoto(true);
 
-      await api.patch(`/auth/${user?.id}/update-photo`, formData, {
+      await api.patch(`/users/${user?.id}/update-photo`, formData, {
         headers: {
           "Content-Type": "multipart/form-data"
         },
