@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Modal,
   View,
@@ -20,6 +20,8 @@ interface TermsModalProps {
   showAcceptButton?: boolean;
 }
 
+type TabType = "terms" | "privacy";
+
 export default function TermsModal({
   visible,
   onClose,
@@ -27,6 +29,23 @@ export default function TermsModal({
   showAcceptButton = false,
 }: TermsModalProps) {
   const { colors, fs, t } = useTheme();
+  const [activeTab, setActiveTab] = useState<TabType>("terms");
+
+  const getContent = () => {
+    if (activeTab === "terms") {
+      return t.termsBody;
+    } else {
+      return t.privacyBody;
+    }
+  };
+
+  const getTitle = () => {
+    if (activeTab === "terms") {
+      return t.termsModalTitle;
+    } else {
+      return t.privacyModalTitle;
+    }
+  };
 
   return (
     <Modal
@@ -51,7 +70,7 @@ export default function TermsModal({
               style={[styles.title, { color: colors.text, fontSize: fs(18) }]}
               accessibilityRole="header"
             >
-              {t.termsModalTitle}
+              {getTitle()}
             </Text>
             <TouchableOpacity
               onPress={onClose}
@@ -64,17 +83,75 @@ export default function TermsModal({
             </TouchableOpacity>
           </View>
 
+          {/* Tabs */}
+          <View
+            style={[styles.tabsContainer, { borderBottomColor: colors.cardBorder }]}
+          >
+            <TouchableOpacity
+              style={[
+                styles.tab,
+                {
+                  borderBottomColor:
+                    activeTab === "terms" ? colors.accent : "transparent",
+                  borderBottomWidth: activeTab === "terms" ? 2 : 0,
+                },
+              ]}
+              onPress={() => setActiveTab("terms")}
+              accessibilityRole="tab"
+              accessibilityState={{ selected: activeTab === "terms" }}
+            >
+              <Text
+                style={[
+                  styles.tabText,
+                  {
+                    color: activeTab === "terms" ? colors.accent : colors.textMuted,
+                    fontSize: fs(14),
+                  },
+                ]}
+              >
+                {t.termsLinkLabel}
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.tab,
+                {
+                  borderBottomColor:
+                    activeTab === "privacy" ? colors.accent : "transparent",
+                  borderBottomWidth: activeTab === "privacy" ? 2 : 0,
+                },
+              ]}
+              onPress={() => setActiveTab("privacy")}
+              accessibilityRole="tab"
+              accessibilityState={{ selected: activeTab === "privacy" }}
+            >
+              <Text
+                style={[
+                  styles.tabText,
+                  {
+                    color:
+                      activeTab === "privacy" ? colors.accent : colors.textMuted,
+                    fontSize: fs(14),
+                  },
+                ]}
+              >
+                {t.privacyLinkLabel}
+              </Text>
+            </TouchableOpacity>
+          </View>
+
           {/* Body */}
           <ScrollView
             style={styles.scroll}
             contentContainerStyle={styles.scrollContent}
             showsVerticalScrollIndicator
-            accessibilityLabel={t.termsModalTitle}
+            accessibilityLabel={getTitle()}
           >
             <Text
               style={[styles.body, { color: colors.text, fontSize: fs(14) }]}
             >
-              {t.termsBody}
+              {getContent()}
             </Text>
           </ScrollView>
 
@@ -163,6 +240,21 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginLeft: 12,
+  },
+  tabsContainer: {
+    flexDirection: "row",
+    borderBottomWidth: 1,
+  },
+  tab: {
+    flex: 1,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    borderBottomWidth: 2,
+  },
+  tabText: {
+    fontWeight: "600",
   },
   scroll: {
     flexGrow: 0,

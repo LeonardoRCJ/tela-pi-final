@@ -125,10 +125,10 @@ export default function TrainingSessionDetail({ route, navigation }: any) {
     } catch (err: any) {
       Toast.show({
         type: "error",
-        text1: "Erro",
+        text1: t.toastError,
         text2:
           err?.response?.data?.message ||
-          "Falha ao carregar detalhes da sessão",
+          t.loadSessionError,
       });
     }
   }, [sessionId]);
@@ -198,8 +198,8 @@ export default function TrainingSessionDetail({ route, navigation }: any) {
     if (payloadAttendances.length === 0) {
       Toast.show({
         type: "info",
-        text1: "Aviso",
-        text2: "Nenhuma presença foi alterada.",
+        text1: t.toastWarning,
+        text2: t.noAttendanceChanges,
       });
 
       return;
@@ -215,18 +215,18 @@ export default function TrainingSessionDetail({ route, navigation }: any) {
 
       Toast.show({
         type: "success",
-        text1: "Sucesso",
-        text2: "Lista salva com sucesso!",
+        text1: t.toastSuccess,
+        text2: t.attendanceSaved,
       });
 
       await loadData();
     } catch (err: any) {
       Toast.show({
         type: "error",
-        text1: "Erro",
+        text1: t.toastError,
         text2:
           err?.response?.data?.message ||
-          "Erro ao salvar lista",
+          t.saveAttendanceErrorBody,
       });
     } finally {
       setSaving(false);
@@ -238,7 +238,7 @@ export default function TrainingSessionDetail({ route, navigation }: any) {
       if (!visitantName || !visitantPhone) {
         Toast.show({
           type: "info",
-          text1: "Preencha os campos",
+          text1: t.fillAllFields,
         });
 
         return;
@@ -252,7 +252,7 @@ export default function TrainingSessionDetail({ route, navigation }: any) {
 
       Toast.show({
         type: "success",
-        text1: "Visitante criado",
+        text1: t.visitantCreatedTitle,
       });
 
       setVisitantName("");
@@ -264,10 +264,10 @@ export default function TrainingSessionDetail({ route, navigation }: any) {
     } catch (err: any) {
       Toast.show({
         type: "error",
-        text1: "Erro",
+        text1: t.visitantErrorTitle,
         text2:
           err?.response?.data?.message ||
-          "Erro ao criar visitante",
+          t.visitantErrorMessage,
       });
     }
   }
@@ -332,7 +332,7 @@ export default function TrainingSessionDetail({ route, navigation }: any) {
               },
             ]}
           >
-            Frequência: {Math.round(item.frequency)}%
+            {t.frequency}: {Math.round(item.frequency)}%
           </Text>
         </View>
 
@@ -421,7 +421,7 @@ export default function TrainingSessionDetail({ route, navigation }: any) {
                 },
               ]}
             >
-              VISITANTE
+              {t.visitantBadge}
             </Text>
           </View>
 
@@ -573,7 +573,7 @@ export default function TrainingSessionDetail({ route, navigation }: any) {
                     },
                   ]}
                 >
-                  Presentes: {stats.presentes}
+                  {t.presentCountLabel}: {stats.presentes}
                 </Text>
 
                 <Text
@@ -585,7 +585,7 @@ export default function TrainingSessionDetail({ route, navigation }: any) {
                     },
                   ]}
                 >
-                  Total: {stats.total}
+                  {t.totalCountLabel}: {stats.total}
                 </Text>
               </View>
 
@@ -600,7 +600,7 @@ export default function TrainingSessionDetail({ route, navigation }: any) {
                       },
                     ]}
                   >
-                    VISITANTES
+                    {t.visitantsLabel}
                   </Text>
 
                   {visitants.map((visitant) => (
@@ -622,7 +622,7 @@ export default function TrainingSessionDetail({ route, navigation }: any) {
                   },
                 ]}
               >
-                ALUNOS
+                {t.students}
               </Text>
             </>
           }
@@ -643,7 +643,7 @@ export default function TrainingSessionDetail({ route, navigation }: any) {
                   },
                 ]}
               >
-                Nenhum aluno encontrado.
+                {t.noStudentsFound}
               </Text>
             </View>
           )}
@@ -691,7 +691,7 @@ export default function TrainingSessionDetail({ route, navigation }: any) {
                   },
                 ]}
               >
-                SALVAR LISTA
+                {t.saveListButton}
               </Text>
             </>
           )}
@@ -723,7 +723,7 @@ export default function TrainingSessionDetail({ route, navigation }: any) {
                   },
                 ]}
               >
-                Novo Visitante
+                {t.newVisitantTitle}
               </Text>
 
               <TouchableOpacity
@@ -758,7 +758,7 @@ export default function TrainingSessionDetail({ route, navigation }: any) {
                 />
 
                 <TextInput
-                  placeholder="Nome"
+                  placeholder={t.namePlaceholder}
                   placeholderTextColor={
                     colors.textMuted
                   }
@@ -790,7 +790,7 @@ export default function TrainingSessionDetail({ route, navigation }: any) {
                 />
 
                 <TextInput
-                  placeholder="Telefone"
+                  placeholder={t.phonePlaceholder}
                   placeholderTextColor={
                     colors.textMuted
                   }
@@ -831,7 +831,7 @@ export default function TrainingSessionDetail({ route, navigation }: any) {
                     },
                   ]}
                 >
-                  CRIAR VISITANTE
+                  {t.createVisitantButton}
                 </Text>
               </TouchableOpacity>
             </ScrollView>

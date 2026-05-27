@@ -3,7 +3,7 @@ import axios from "axios";
 import { invalidateSession } from "./authSession";
 
 const api = axios.create({
-  baseURL: "http://192.168.0.93:8083/api/v1",
+  baseURL: "http://192.168.15.6:8083/api/v1",
 });
 
 let _authToken: string | null = null;

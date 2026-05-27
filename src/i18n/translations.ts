@@ -224,6 +224,31 @@ export const TRANSLATIONS: Record<Lang, Record<string, string>> = {
       "4. RESPONSABILIDADES\nO CoachPad não se responsabiliza por lesões ou acidentes ocorridos durante as aulas. A gestão das turmas é de responsabilidade exclusiva do instrutor.\n\n" +
       "5. MODIFICAÇÕES\nEstes termos podem ser atualizados. Notificaremos os usuários sobre mudanças significativas.\n\n" +
       "6. CONTATO\nDúvidas? Entre em contato pelo suporte do aplicativo.",
+    privacyModalTitle: "Política de Privacidade",
+    privacyBody:
+      "Privacidade e Proteção de Dados - CoachPad\n\n" +
+      "1. INTRODUÇÃO\nNo CoachPad, levamos a privacidade e proteção de seus dados muito a sério. Esta Política de Privacidade explica como coletamos, usamos, armazenamos e protegemos suas informações pessoais.\n\n" +
+      "2. INFORMAÇÕES QUE COLETAMOS\nColetamos os seguintes dados:\n• Informações de conta: nome, e-mail, telefone e senha criptografada\n• Fotos de perfil e conteúdo de mídia que você compartilha\n• Registros de presença e histórico de treinos\n• Informações de uso do aplicativo (logs de acesso e atividades)\n\n" +
+      "3. COMO USAMOS SEUS DADOS\nUsamos seus dados para:\n• Fornecer e manter os serviços do CoachPad\n• Autenticar sua conta e gerenciar sua experiência\n• Permitir a funcionalidade de turmas e álbuns\n• Melhorar o desempenho e segurança do aplicativo\n• Cumprir com obrigações legais\n\n" +
+      "4. COMPARTILHAMENTO DE DADOS\nNão compartilhamos seus dados pessoais com terceiros, exceto:\n• Com o instrutor responsável pela sua turma (dados de presença)\n• Com outros alunos da sua turma (apenas para fins de coordenação)\n• Quando requerido por lei\n\n" +
+      "5. SEGURANÇA DE DADOS\nImplementamos medidas de segurança robustas, incluindo criptografia de senhas e comunicação segura (HTTPS). Porém, nenhum sistema é 100% seguro.\n\n" +
+      "6. RETENÇÃO DE DADOS\nRetemos seus dados enquanto sua conta estiver ativa. Você pode solicitar a exclusão de sua conta a qualquer momento, caso em que seus dados serão deletados dentro de 30 dias.\n\n" +
+      "7. DIREITOS DO USUÁRIO\nVocê tem direito a:\n• Acessar seus dados pessoais\n• Corrigir dados incorretos\n• Solicitar a exclusão de sua conta\n• Revogar consentimentos\n\n" +
+      "8. MENORES DE IDADE\nO CoachPad não é dirigido a menores de 13 anos. Se descobrirmos que coletamos dados de menores, iremos deletá-los imediatamente.\n\n" +
+      "9. CONTATO\nPara dúvidas sobre privacidade, entre em contato pelo suporte do aplicativo.",
+    privacyLinkLabel: "Política de Privacidade",
+    visitantsLabel: "VISITANTES",
+    noStudentsFound: "Nenhum aluno encontrado.",
+    saveListButton: "SALVAR LISTA",
+    newVisitantTitle: "Novo Visitante",
+    phonePlaceholder: "Telefone",
+    createVisitantButton: "CRIAR VISITANTE",
+    visitantBadge: "VISITANTE",
+    presentCountLabel: "Presentes",
+    totalCountLabel: "Total",
+    visitantCreatedTitle: "Visitante criado",
+    visitantErrorTitle: "Erro",
+    visitantErrorMessage: "Erro ao criar visitante",
   },
   "en-US": {
     login: "Login",
@@ -446,5 +471,30 @@ export const TRANSLATIONS: Record<Lang, Record<string, string>> = {
       "4. RESPONSIBILITIES\nCoachPad is not responsible for injuries or accidents occurring during classes. Class management is the sole responsibility of the instructor.\n\n" +
       "5. MODIFICATIONS\nThese terms may be updated. We will notify users of significant changes.\n\n" +
       "6. CONTACT\nQuestions? Contact us through the app support.",
+    privacyModalTitle: "Privacy Policy",
+    privacyBody:
+      "Privacy and Data Protection - CoachPad\n\n" +
+      "1. INTRODUCTION\nAt CoachPad, we take your privacy and data protection very seriously. This Privacy Policy explains how we collect, use, store, and protect your personal information.\n\n" +
+      "2. INFORMATION WE COLLECT\nWe collect the following data:\n• Account information: name, email, phone, and encrypted password\n• Profile photos and media content you share\n• Attendance records and training history\n• App usage information (access logs and activities)\n\n" +
+      "3. HOW WE USE YOUR DATA\nWe use your data to:\n• Provide and maintain CoachPad services\n• Authenticate your account and manage your experience\n• Enable class and album functionality\n• Improve app performance and security\n• Comply with legal obligations\n\n" +
+      "4. DATA SHARING\nWe do not share your personal data with third parties, except:\n• With the instructor responsible for your class (attendance data)\n• With other students in your class (coordination purposes only)\n• When required by law\n\n" +
+      "5. DATA SECURITY\nWe implement robust security measures, including password encryption and secure communication (HTTPS). However, no system is 100% secure.\n\n" +
+      "6. DATA RETENTION\nWe retain your data while your account is active. You can request account deletion at any time, after which your data will be deleted within 30 days.\n\n" +
+      "7. USER RIGHTS\nYou have the right to:\n• Access your personal data\n• Correct incorrect data\n• Request account deletion\n• Revoke consents\n\n" +
+      "8. MINORS\nCoachPad is not directed to minors under 13 years old. If we discover we have collected data from minors, we will delete it immediately.\n\n" +
+      "9. CONTACT\nFor privacy questions, contact us through app support.",
+    privacyLinkLabel: "Privacy Policy",
+    visitantsLabel: "VISITORS",
+    noStudentsFound: "No students found.",
+    saveListButton: "SAVE LIST",
+    newVisitantTitle: "New Visitor",
+    phonePlaceholder: "Phone",
+    createVisitantButton: "CREATE VISITOR",
+    visitantBadge: "VISITOR",
+    presentCountLabel: "Present",
+    totalCountLabel: "Total",
+    visitantCreatedTitle: "Visitor created",
+    visitantErrorTitle: "Error",
+    visitantErrorMessage: "Error creating visitor",
   },
 };
