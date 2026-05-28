@@ -1,4 +1,4 @@
-# Tela PI Final
+# COACHPAD MOBILE
 
 Aplicativo mobile desenvolvido com React Native e Expo para gerenciamento de turmas, frequência de alunos, álbuns de fotos e sessões de treinamento. O app oferece autenticação segura, integração com câmera para scanner de QR codes e interface moderna com tema claro/escuro.
 
