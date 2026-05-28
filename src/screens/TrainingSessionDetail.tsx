@@ -1,16 +1,16 @@
 import { Ionicons } from "@expo/vector-icons";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
-  ActivityIndicator,
-  FlatList,
-  Modal,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    FlatList,
+    Modal,
+    RefreshControl,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
@@ -71,6 +71,12 @@ export default function TrainingSessionDetail({ route, navigation }: any) {
 
   const [visitantName, setVisitantName] = useState("");
   const [visitantPhone, setVisitantPhone] = useState("");
+
+  const [deleteConfirmModalVisible, setDeleteConfirmModalVisible] =
+    useState(false);
+  const [visitantToDelete, setVisitantToDelete] =
+    useState<Visitant | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const displayGroupName =
     sessionData?.classGroupName || initialName;
@@ -272,6 +278,41 @@ export default function TrainingSessionDetail({ route, navigation }: any) {
     }
   }
 
+  async function deleteVisitant(visitant: Visitant) {
+    setVisitantToDelete(visitant);
+    setDeleteConfirmModalVisible(true);
+  }
+
+  async function confirmDeleteVisitant() {
+    if (!visitantToDelete) return;
+
+    setDeleting(true);
+
+    try {
+      await api.delete(`/visitants/${visitantToDelete.id}`);
+
+      Toast.show({
+        type: "success",
+        text1: t.visitantDeletedTitle || "Visitante removido",
+      });
+
+      setDeleteConfirmModalVisible(false);
+      setVisitantToDelete(null);
+
+      await loadVisitants();
+    } catch (err: any) {
+      Toast.show({
+        type: "error",
+        text1: t.visitantErrorTitle,
+        text2:
+          err?.response?.data?.message ||
+          "Erro ao deletar visitante",
+      });
+    } finally {
+      setDeleting(false);
+    }
+  }
+
   const stats = useMemo(() => {
     const total = practitioners?.length || 0;
 
@@ -449,6 +490,22 @@ export default function TrainingSessionDetail({ route, navigation }: any) {
             {item.phone}
           </Text>
         </View>
+
+        <TouchableOpacity
+          style={[
+            styles.deleteBtn,
+            {
+              backgroundColor: colors.danger,
+            },
+          ]}
+          onPress={() => deleteVisitant(item)}
+        >
+          <Ionicons
+            name="trash-outline"
+            size={18}
+            color="#FFF"
+          />
+        </TouchableOpacity>
       </View>
     );
   };
@@ -838,6 +895,123 @@ export default function TrainingSessionDetail({ route, navigation }: any) {
           </View>
         </View>
       </Modal>
+
+      <Modal
+        visible={deleteConfirmModalVisible}
+        transparent
+        animationType="fade"
+      >
+        <View style={styles.modalOverlay}>
+          <View
+            style={[
+              styles.confirmModal,
+              {
+                backgroundColor: colors.card,
+                borderColor: colors.cardBorder,
+              },
+            ]}
+          >
+            <View style={styles.confirmHeader}>
+              <Ionicons
+                name="alert-circle-outline"
+                size={32}
+                color={colors.danger}
+              />
+            </View>
+
+            <Text
+              style={[
+                styles.confirmTitle,
+                {
+                  color: colors.text,
+                  fontSize: fs(18),
+                },
+              ]}
+            >
+              Deletar visitante?
+            </Text>
+
+            <Text
+              style={[
+                styles.confirmMessage,
+                {
+                  color: colors.textMuted,
+                  fontSize: fs(14),
+                },
+              ]}
+            >
+              Tem certeza que deseja remover{"\n"}
+              <Text
+                style={{
+                  color: colors.text,
+                  fontWeight: "700",
+                }}
+              >
+                {visitantToDelete?.name}
+              </Text>
+              ?
+            </Text>
+
+            <View style={styles.confirmActions}>
+              <TouchableOpacity
+                style={[
+                  styles.confirmBtn,
+                  {
+                    backgroundColor: colors.bgSecondary,
+                  },
+                ]}
+                onPress={() => {
+                  setDeleteConfirmModalVisible(
+                    false
+                  );
+                  setVisitantToDelete(null);
+                }}
+              >
+                <Text
+                  style={[
+                    styles.confirmBtnText,
+                    {
+                      color: colors.text,
+                      fontSize: fs(14),
+                    },
+                  ]}
+                >
+                  Cancelar
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  styles.confirmBtn,
+                  {
+                    backgroundColor: colors.danger,
+                  },
+                ]}
+                onPress={confirmDeleteVisitant}
+                disabled={deleting}
+              >
+                {deleting ? (
+                  <ActivityIndicator
+                    color={colors.accentForeground}
+                  />
+                ) : (
+                  <Text
+                    style={[
+                      styles.confirmBtnText,
+                      {
+                        color: colors.accentForeground,
+                        fontSize: fs(14),
+                      },
+                    ]}
+                  >
+                    Deletar
+                  </Text>
+                )}
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -983,6 +1157,15 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
   },
 
+  deleteBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    justifyContent: "center",
+    alignItems: "center",
+    marginLeft: 12,
+  },
+
   empty: {
     justifyContent: "center",
     alignItems: "center",
@@ -1069,5 +1252,46 @@ const styles = StyleSheet.create({
   createBtnText: {
     fontWeight: "900",
     letterSpacing: 1,
+  },
+
+  confirmModal: {
+    borderRadius: 24,
+    borderWidth: 1,
+    padding: 28,
+    alignItems: "center",
+  },
+
+  confirmHeader: {
+    marginBottom: 16,
+  },
+
+  confirmTitle: {
+    fontWeight: "900",
+    marginBottom: 8,
+    textAlign: "center",
+  },
+
+  confirmMessage: {
+    textAlign: "center",
+    lineHeight: 20,
+    marginBottom: 28,
+  },
+
+  confirmActions: {
+    width: "100%",
+    flexDirection: "row",
+    gap: 12,
+  },
+
+  confirmBtn: {
+    flex: 1,
+    height: 48,
+    borderRadius: 12,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  confirmBtnText: {
+    fontWeight: "700",
   },
 });

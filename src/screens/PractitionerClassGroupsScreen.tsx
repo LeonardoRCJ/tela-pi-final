@@ -218,9 +218,6 @@ export default function PractitionerClassGroups() {
               accessibilityLabel="Digitar código manualmente"
               accessibilityRole="button"
             >
-              <Text style={[styles.codeButtonText, { fontSize: fs(14), color: colors.textMuted }]}>
-                Digitar código manualmente
-              </Text>
             </TouchableOpacity>
           </View>
         </ScrollView>

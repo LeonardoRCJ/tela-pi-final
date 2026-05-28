@@ -59,6 +59,7 @@ export default function Profile() {
 
   const [userSelected, setSelectedUser] = useState<User | null>(null);
   const [openLogoutDialog, setOpenLogoutDialog] = useState<boolean>(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
 
   const [name, setName] = useState("");
   const [bio, setBio] = useState("");
@@ -67,6 +68,7 @@ export default function Profile() {
 
   const [loadingPhoto, setLoadingPhoto] = useState(false);
   const [savingProfile, setSavingProfile] = useState(false);
+  const [deletingAccount, setDeletingAccount] = useState(false);
 
   async function getUserProfile() {
     try {
@@ -175,6 +177,38 @@ export default function Profile() {
 
   function handleLogout() {
     setOpenLogoutDialog(true);
+  }
+
+  function handleDeleteAccount() {
+    setOpenDeleteDialog(true);
+  }
+
+  async function confirmDeleteAccount() {
+    setDeletingAccount(true);
+
+    try {
+      await api.delete(`/users/${user?.id}`);
+
+      Toast.show({
+        type: 'success',
+        text1: 'Sucesso!',
+        text2: 'Conta deletada com sucesso',
+        position: 'top'
+      });
+
+      setOpenDeleteDialog(false);
+      logout();
+    } catch (error: any) {
+      Toast.show({
+        type: 'error',
+        text1: 'Erro',
+        text2: error?.response?.data?.message || 'Não foi possível deletar a conta',
+        position: 'top'
+      });
+      setOpenDeleteDialog(false);
+    } finally {
+      setDeletingAccount(false);
+    }
   }
 
     const bgColor = colors.bg;
@@ -422,6 +456,29 @@ export default function Profile() {
              { t.logout }
             </Text>
           </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.deleteAccountButton}
+            onPress={handleDeleteAccount}
+            accessibilityLabel="Deletar conta"
+            accessibilityRole="button"
+          >
+            <Ionicons
+              name="trash"
+              size={22}
+              color="#FF0000"
+              style={{ marginRight: 10 }}
+            />
+
+            <Text
+              style={[
+                styles.deleteAccountText,
+                { fontSize: fs(16) },
+              ]}
+            >
+              Deletar Conta
+            </Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
 
@@ -525,6 +582,36 @@ export default function Profile() {
               }}
             >
               <Text className="color-white">Sim</Text>
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={openDeleteDialog} onOpenChange={setOpenDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Deletar Conta?</AlertDialogTitle>
+
+            <AlertDialogDescription>
+              Esta ação é permanente e não pode ser desfeita. Todos os seus dados serão deletados.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel>
+              <Text>Cancelar</Text>
+            </AlertDialogCancel>
+
+            <AlertDialogAction
+              className="bg-destructive"
+              onPress={confirmDeleteAccount}
+              disabled={deletingAccount}
+            >
+              {deletingAccount ? (
+                <ActivityIndicator color="white" size="small" />
+              ) : (
+                <Text className="color-white">Deletar</Text>
+              )}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -675,6 +762,24 @@ const styles = StyleSheet.create({
 
   logoutText: {
     color: "#FF4444",
+    fontWeight: "bold",
+  },
+
+  deleteAccountButton: {
+    flexDirection: "row",
+    backgroundColor: "#FF000015",
+    borderRadius: 12,
+    justifyContent: "center",
+    alignItems: "center",
+    height: 50,
+    width: 300,
+    borderWidth: 1,
+    borderColor: "#FF000030",
+    marginTop: 12,
+  },
+
+  deleteAccountText: {
+    color: "#FF0000",
     fontWeight: "bold",
   },
 

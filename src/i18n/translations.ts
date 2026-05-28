@@ -217,25 +217,89 @@ export const TRANSLATIONS: Record<Lang, Record<string, string>> = {
     termsModalClose: "Fechar",
     termsModalAccept: "Aceitar e continuar",
     termsBody:
-      "Bem-vindo ao CoachPad. Ao usar este aplicativo, você concorda com os seguintes termos:\n\n" +
-      "1. USO PERMITIDO\nO CoachPad destina-se exclusivamente a instrutores e praticantes de artes marciais. É proibido o uso para fins ilícitos ou não relacionados à plataforma.\n\n" +
-      "2. DADOS PESSOAIS\nColetamos apenas os dados necessários para o funcionamento do app (nome, e-mail, telefone, fotos de perfil e registros de presença). Não vendemos seus dados a terceiros.\n\n" +
-      "3. FOTOS E CONTEÚDO\nAo publicar fotos nos álbuns da turma, você declara ter direito de fazê-lo. Imagens que violem privacidade de terceiros serão removidas.\n\n" +
-      "4. RESPONSABILIDADES\nO CoachPad não se responsabiliza por lesões ou acidentes ocorridos durante as aulas. A gestão das turmas é de responsabilidade exclusiva do instrutor.\n\n" +
-      "5. MODIFICAÇÕES\nEstes termos podem ser atualizados. Notificaremos os usuários sobre mudanças significativas.\n\n" +
-      "6. CONTATO\nDúvidas? Entre em contato pelo suporte do aplicativo.",
+  "Bem-vindo ao CoachPad. Ao utilizar este aplicativo, você concorda com os seguintes Termos de Uso.\n\n" +
+  "1. OBJETIVO DO SISTEMA\n" +
+  "O CoachPad é uma plataforma destinada ao gerenciamento de academias e turmas de artes marciais, permitindo controle de frequência, organização de sessões de treino, gerenciamento de praticantes, visitantes e compartilhamento de álbuns de fotos.\n\n" +
+  "2. CADASTRO E RESPONSABILIDADE DA CONTA\n" +
+  "Cada usuário é responsável pelas informações fornecidas durante o cadastro e pela segurança de sua conta.\n" +
+  "É proibido compartilhar credenciais de acesso com terceiros.\n\n" +
+  "3. TURMAS E FREQUÊNCIA\n" +
+  "Instrutores podem criar turmas, sessões de treino e registrar presença dos praticantes.\n" +
+  "Os registros de frequência possuem finalidade exclusivamente administrativa e esportiva.\n\n" +
+  "4. VISITANTES\n" +
+  "O sistema permite registrar visitantes para aulas experimentais.\n" +
+  "Cada visitante poderá participar apenas de uma única aula experimental.\n" +
+  "Ao cadastrar um visitante, o instrutor declara possuir autorização para utilização das informações fornecidas.\n\n" +
+  "5. ÁLBUNS E FOTOS\n" +
+  "Fotos publicadas nos álbuns devem respeitar privacidade, direitos de imagem e legislação vigente.\n" +
+  "O usuário que realizar o envio da imagem é integralmente responsável pelo conteúdo publicado.\n\n" +
+  "6. USO ADEQUADO\n" +
+  "É proibido utilizar o CoachPad para:\n" +
+  "• Compartilhar conteúdo ofensivo, ilegal ou discriminatório;\n" +
+  "• Violar privacidade de terceiros;\n" +
+  "• Tentar acessar dados sem autorização;\n" +
+  "• Realizar qualquer atividade que comprometa a segurança da plataforma.\n\n" +
+  "7. DISPONIBILIDADE DO SERVIÇO\n" +
+  "Embora busquemos manter o sistema disponível continuamente, não garantimos funcionamento ininterrupto ou livre de falhas.\n\n" +
+  "8. LIMITAÇÃO DE RESPONSABILIDADE\n" +
+  "O CoachPad não se responsabiliza por acidentes, lesões ou acontecimentos ocorridos durante treinamentos ou eventos organizados pelas academias.\n\n" +
+  "9. EXCLUSÃO DE CONTA E DADOS\n" +
+  "Usuários podem solicitar exclusão da conta.\n" +
+  "Determinados registros poderão ser mantidos temporariamente para fins legais, históricos e de integridade da plataforma.\n\n" +
+  "10. ALTERAÇÕES NOS TERMOS\n" +
+  "Os presentes Termos de Uso poderão ser atualizados periodicamente.\n" +
+  "O uso contínuo da plataforma após alterações implica concordância com os novos termos.\n\n" +
+  "11. CONTATO\n" +
+  "Em caso de dúvidas, solicitações ou denúncias, entre em contato pelo suporte oficial do aplicativo.",
     privacyModalTitle: "Política de Privacidade",
     privacyBody:
-      "Privacidade e Proteção de Dados - CoachPad\n\n" +
-      "1. INTRODUÇÃO\nNo CoachPad, levamos a privacidade e proteção de seus dados muito a sério. Esta Política de Privacidade explica como coletamos, usamos, armazenamos e protegemos suas informações pessoais.\n\n" +
-      "2. INFORMAÇÕES QUE COLETAMOS\nColetamos os seguintes dados:\n• Informações de conta: nome, e-mail, telefone e senha criptografada\n• Fotos de perfil e conteúdo de mídia que você compartilha\n• Registros de presença e histórico de treinos\n• Informações de uso do aplicativo (logs de acesso e atividades)\n\n" +
-      "3. COMO USAMOS SEUS DADOS\nUsamos seus dados para:\n• Fornecer e manter os serviços do CoachPad\n• Autenticar sua conta e gerenciar sua experiência\n• Permitir a funcionalidade de turmas e álbuns\n• Melhorar o desempenho e segurança do aplicativo\n• Cumprir com obrigações legais\n\n" +
-      "4. COMPARTILHAMENTO DE DADOS\nNão compartilhamos seus dados pessoais com terceiros, exceto:\n• Com o instrutor responsável pela sua turma (dados de presença)\n• Com outros alunos da sua turma (apenas para fins de coordenação)\n• Quando requerido por lei\n\n" +
-      "5. SEGURANÇA DE DADOS\nImplementamos medidas de segurança robustas, incluindo criptografia de senhas e comunicação segura (HTTPS). Porém, nenhum sistema é 100% seguro.\n\n" +
-      "6. RETENÇÃO DE DADOS\nRetemos seus dados enquanto sua conta estiver ativa. Você pode solicitar a exclusão de sua conta a qualquer momento, caso em que seus dados serão deletados dentro de 30 dias.\n\n" +
-      "7. DIREITOS DO USUÁRIO\nVocê tem direito a:\n• Acessar seus dados pessoais\n• Corrigir dados incorretos\n• Solicitar a exclusão de sua conta\n• Revogar consentimentos\n\n" +
-      "8. MENORES DE IDADE\nO CoachPad não é dirigido a menores de 13 anos. Se descobrirmos que coletamos dados de menores, iremos deletá-los imediatamente.\n\n" +
-      "9. CONTATO\nPara dúvidas sobre privacidade, entre em contato pelo suporte do aplicativo.",
+  "Política de Privacidade - CoachPad\n\n" +
+  "1. INTRODUÇÃO\n" +
+  "Esta Política de Privacidade descreve como o CoachPad coleta, utiliza, armazena e protege os dados dos usuários, em conformidade com a LGPD (Lei Geral de Proteção de Dados).\n\n" +
+  "2. DADOS COLETADOS\n" +
+  "O CoachPad poderá coletar:\n" +
+  "• Nome;\n" +
+  "• Email;\n" +
+  "• Telefone;\n" +
+  "• Senha criptografada;\n" +
+  "• Fotos enviadas para álbuns;\n" +
+  "• Registros de frequência;\n" +
+  "• Informações de visitantes;\n" +
+  "• Dados de uso da aplicação.\n\n" +
+  "3. FINALIDADE DO USO DOS DADOS\n" +
+  "Os dados são utilizados para:\n" +
+  "• Autenticação e acesso ao sistema;\n" +
+  "• Gerenciamento de turmas e praticantes;\n" +
+  "• Controle de frequência;\n" +
+  "• Organização de sessões de treino;\n" +
+  "• Compartilhamento de fotos e álbuns;\n" +
+  "• Melhorias de segurança e desempenho.\n\n" +
+  "4. DADOS DE VISITANTES\n" +
+  "Visitantes cadastrados para aulas experimentais possuem seus dados vinculados exclusivamente à sessão de treino correspondente.\n" +
+  "Cada visitante poderá utilizar apenas uma aula experimental.\n\n" +
+  "5. COMPARTILHAMENTO DE DADOS\n" +
+  "O CoachPad não vende informações pessoais.\n" +
+  "Os dados poderão ser visualizados apenas por usuários autorizados dentro da plataforma, conforme permissões do sistema.\n\n" +
+  "6. SEGURANÇA DAS INFORMAÇÕES\n" +
+  "Adotamos medidas de segurança para proteger os dados contra acessos não autorizados, perda, alteração ou divulgação indevida.\n" +
+  "As senhas são armazenadas de forma criptografada.\n\n" +
+  "7. RETENÇÃO DOS DADOS\n" +
+  "Os dados serão mantidos enquanto necessários para funcionamento da plataforma ou cumprimento de obrigações legais.\n" +
+  "Após solicitação de exclusão, determinados registros poderão permanecer armazenados temporariamente para integridade histórica do sistema.\n\n" +
+  "8. DIREITOS DO USUÁRIO\n" +
+  "O usuário poderá solicitar:\n" +
+  "• Acesso aos seus dados;\n" +
+  "• Correção de informações incorretas;\n" +
+  "• Exclusão da conta;\n" +
+  "• Revogação de consentimento;\n" +
+  "• Portabilidade dos dados, quando aplicável.\n\n" +
+  "9. USO DE IMAGENS\n" +
+  "O envio de fotos para álbuns implica responsabilidade do usuário sobre autorização de uso de imagem das pessoas fotografadas.\n\n" +
+  "10. ALTERAÇÕES NA POLÍTICA\n" +
+  "Esta Política de Privacidade poderá ser atualizada periodicamente.\n" +
+  "Alterações relevantes poderão ser comunicadas dentro da plataforma.\n\n" +
+  "11. CONTATO\n" +
+  "Para solicitações relacionadas à privacidade e proteção de dados, utilize os canais oficiais de suporte do CoachPad.",
     privacyLinkLabel: "Política de Privacidade",
     visitantsLabel: "VISITANTES",
     noStudentsFound: "Nenhum aluno encontrado.",
@@ -464,25 +528,89 @@ export const TRANSLATIONS: Record<Lang, Record<string, string>> = {
     termsModalClose: "Close",
     termsModalAccept: "Accept and continue",
     termsBody:
-      "Welcome to CoachPad. By using this app, you agree to the following terms:\n\n" +
-      "1. PERMITTED USE\nCoachPad is intended exclusively for martial arts instructors and practitioners. Use for illegal purposes or unrelated to the platform is prohibited.\n\n" +
-      "2. PERSONAL DATA\nWe collect only the data necessary for the app to function (name, email, phone, profile photos, and attendance records). We do not sell your data to third parties.\n\n" +
-      "3. PHOTOS AND CONTENT\nBy publishing photos in class albums, you declare that you have the right to do so. Images that violate third-party privacy will be removed.\n\n" +
-      "4. RESPONSIBILITIES\nCoachPad is not responsible for injuries or accidents occurring during classes. Class management is the sole responsibility of the instructor.\n\n" +
-      "5. MODIFICATIONS\nThese terms may be updated. We will notify users of significant changes.\n\n" +
-      "6. CONTACT\nQuestions? Contact us through the app support.",
+  "Welcome to CoachPad. By using this application, you agree to the following Terms of Use.\n\n" +
+  "1. SYSTEM PURPOSE\n" +
+  "CoachPad is a platform designed for martial arts schools and class management, allowing attendance control, training session organization, practitioner management, visitor management, and photo album sharing.\n\n" +
+  "2. ACCOUNT REGISTRATION AND RESPONSIBILITY\n" +
+  "Each user is responsible for the information provided during registration and for maintaining the security of their account.\n" +
+  "Sharing login credentials with third parties is prohibited.\n\n" +
+  "3. CLASSES AND ATTENDANCE\n" +
+  "Instructors may create classes, training sessions, and manage practitioner attendance.\n" +
+  "Attendance records are intended exclusively for administrative and sports-related purposes.\n\n" +
+  "4. VISITORS\n" +
+  "The system allows visitor registration for trial classes.\n" +
+  "Each visitor may participate in only one trial class.\n" +
+  "By registering a visitor, the instructor declares they have authorization to use the provided information.\n\n" +
+  "5. ALBUMS AND PHOTOS\n" +
+  "Photos uploaded to albums must respect privacy rights, image rights, and applicable laws.\n" +
+  "The user uploading the image is fully responsible for the published content.\n\n" +
+  "6. ACCEPTABLE USE\n" +
+  "It is prohibited to use CoachPad to:\n" +
+  "• Share offensive, illegal, or discriminatory content;\n" +
+  "• Violate third-party privacy;\n" +
+  "• Attempt unauthorized access to data;\n" +
+  "• Perform activities that compromise platform security.\n\n" +
+  "7. SERVICE AVAILABILITY\n" +
+  "Although we strive to keep the system continuously available, we do not guarantee uninterrupted or error-free operation.\n\n" +
+  "8. LIMITATION OF LIABILITY\n" +
+  "CoachPad is not responsible for accidents, injuries, or events occurring during training sessions or activities organized by martial arts schools.\n\n" +
+  "9. ACCOUNT AND DATA DELETION\n" +
+  "Users may request account deletion.\n" +
+  "Certain records may be temporarily retained for legal, historical, and platform integrity purposes.\n\n" +
+  "10. CHANGES TO THE TERMS\n" +
+  "These Terms of Use may be updated periodically.\n" +
+  "Continued use of the platform after changes implies acceptance of the updated terms.\n\n" +
+  "11. CONTACT\n" +
+  "For questions, requests, or reports, please contact the official CoachPad support channels.",
     privacyModalTitle: "Privacy Policy",
     privacyBody:
-      "Privacy and Data Protection - CoachPad\n\n" +
-      "1. INTRODUCTION\nAt CoachPad, we take your privacy and data protection very seriously. This Privacy Policy explains how we collect, use, store, and protect your personal information.\n\n" +
-      "2. INFORMATION WE COLLECT\nWe collect the following data:\n• Account information: name, email, phone, and encrypted password\n• Profile photos and media content you share\n• Attendance records and training history\n• App usage information (access logs and activities)\n\n" +
-      "3. HOW WE USE YOUR DATA\nWe use your data to:\n• Provide and maintain CoachPad services\n• Authenticate your account and manage your experience\n• Enable class and album functionality\n• Improve app performance and security\n• Comply with legal obligations\n\n" +
-      "4. DATA SHARING\nWe do not share your personal data with third parties, except:\n• With the instructor responsible for your class (attendance data)\n• With other students in your class (coordination purposes only)\n• When required by law\n\n" +
-      "5. DATA SECURITY\nWe implement robust security measures, including password encryption and secure communication (HTTPS). However, no system is 100% secure.\n\n" +
-      "6. DATA RETENTION\nWe retain your data while your account is active. You can request account deletion at any time, after which your data will be deleted within 30 days.\n\n" +
-      "7. USER RIGHTS\nYou have the right to:\n• Access your personal data\n• Correct incorrect data\n• Request account deletion\n• Revoke consents\n\n" +
-      "8. MINORS\nCoachPad is not directed to minors under 13 years old. If we discover we have collected data from minors, we will delete it immediately.\n\n" +
-      "9. CONTACT\nFor privacy questions, contact us through app support.",
+  "Privacy Policy - CoachPad\n\n" +
+  "1. INTRODUCTION\n" +
+  "This Privacy Policy describes how CoachPad collects, uses, stores, and protects user data in compliance with applicable data protection laws.\n\n" +
+  "2. COLLECTED DATA\n" +
+  "CoachPad may collect:\n" +
+  "• Name;\n" +
+  "• Email address;\n" +
+  "• Phone number;\n" +
+  "• Encrypted password;\n" +
+  "• Photos uploaded to albums;\n" +
+  "• Attendance records;\n" +
+  "• Visitor information;\n" +
+  "• Application usage data.\n\n" +
+  "3. PURPOSE OF DATA USAGE\n" +
+  "The collected data is used for:\n" +
+  "• Authentication and system access;\n" +
+  "• Class and practitioner management;\n" +
+  "• Attendance tracking;\n" +
+  "• Training session organization;\n" +
+  "• Photo and album sharing;\n" +
+  "• Security and performance improvements.\n\n" +
+  "4. VISITOR DATA\n" +
+  "Visitor information registered for trial classes is linked exclusively to the corresponding training session.\n" +
+  "Each visitor may attend only one trial class.\n\n" +
+  "5. DATA SHARING\n" +
+  "CoachPad does not sell personal information.\n" +
+  "Data may only be viewed by authorized users within the platform according to system permissions.\n\n" +
+  "6. INFORMATION SECURITY\n" +
+  "We adopt security measures to protect data against unauthorized access, loss, alteration, or improper disclosure.\n" +
+  "Passwords are stored in encrypted form.\n\n" +
+  "7. DATA RETENTION\n" +
+  "Data will be retained as long as necessary for platform functionality or compliance with legal obligations.\n" +
+  "After an account deletion request, certain records may remain temporarily stored for historical and system integrity purposes.\n\n" +
+  "8. USER RIGHTS\n" +
+  "Users may request:\n" +
+  "• Access to their personal data;\n" +
+  "• Correction of inaccurate information;\n" +
+  "• Account deletion;\n" +
+  "• Consent revocation;\n" +
+  "• Data portability where applicable.\n\n" +
+  "9. IMAGE USAGE\n" +
+  "Uploading photos to albums implies that the user is responsible for obtaining authorization from individuals appearing in the images.\n\n" +
+  "10. POLICY CHANGES\n" +
+  "This Privacy Policy may be updated periodically.\n" +
+  "Relevant changes may be communicated within the platform.\n\n" +
+  "11. CONTACT\n" +
+  "For privacy and data protection requests, please use the official CoachPad support channels.",
     privacyLinkLabel: "Privacy Policy",
     visitantsLabel: "VISITORS",
     noStudentsFound: "No students found.",

@@ -9,10 +9,9 @@ import {
     Platform,
     StyleSheet,
     Text,
-    TextInput,
     TouchableOpacity,
     TouchableWithoutFeedback,
-    View,
+    View
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -73,24 +72,6 @@ export default function JoinClassGroup() {
               </Text>
             </TouchableOpacity>
 
-            <Text style={[styles.orText, { color: colors.textMuted, fontSize: fs(14) }]}>
-              {t.or}
-            </Text>
-
-            <TextInput
-              placeholder={t.classCodePlaceholder}
-              placeholderTextColor={colors.textMuted}
-              value={qrToken}
-              onChangeText={setQrToken}
-              style={[
-                styles.input,
-                {
-                  backgroundColor: colors.inputBg,
-                  color: colors.text,
-                  fontSize: fs(15),
-                },
-              ]}
-            />
 
             <TouchableOpacity
               style={[styles.joinButton, { backgroundColor: colors.accent }]}
